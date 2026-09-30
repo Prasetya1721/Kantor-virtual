@@ -39,7 +39,12 @@ describe('live agent activity', () => {
     })
     expect(calls).toContain('-p default logs agent -n 80 --since 3m')
     expect(calls).toContain('-p leadengineer sessions list --limit 3')
-    expect(snapshot.agents).toMatchObject([{ profile: 'default', availability: 'available', active: true, kind: 'thinking' }, { profile: 'leadengineer', availability: 'available', active: false }])
+    expect(calls).toContain('-p security logs agent -n 80 --since 3m')
+    expect(snapshot.agents).toMatchObject([
+      { profile: 'default', availability: 'available', active: true, kind: 'thinking' },
+      { profile: 'leadengineer', availability: 'available', active: false },
+      { profile: 'security', availability: 'available', active: true, kind: 'thinking' },
+    ])
   })
 })
 
@@ -50,18 +55,25 @@ describe('office placement from live activity', () => {
     const office = buildOfficeSnapshot(runtime, emptyBoard, emptyActivity, { now: at, agentActivity: live([
       { profile: 'default', availability: 'available', active: true, kind: 'chat', label: 'Replying to a chat', mentionsOpenCode: false },
       { profile: 'leadengineer', availability: 'available', active: true, kind: 'cron', label: 'Running a scheduled job', mentionsOpenCode: true },
+      { profile: 'security', availability: 'available', active: false, mentionsOpenCode: false },
     ]) })
     expect(office.stations).toMatchObject([
       { name: 'Lead Agent', state: 'Collaborating', room: 'Workspace', roomPosition: 'meeting-area', activity: 'Replying to a chat', seat: 1 },
       { name: 'Lead Engineer', state: 'Working', room: 'Workspace', roomPosition: 'assigned-desk', activity: 'Running a scheduled job', seat: 2 },
-      { name: 'OpenCode', state: 'Working', room: 'Workspace', activity: 'Building via OpenCode', seat: 3 },
+      { name: 'Cyber Security', state: 'Idle', room: 'Lounge', roomPosition: 'lounge-seat-3', activity: 'On a break', seat: 3 },
+      { name: 'OpenCode', state: 'Working', room: 'Workspace', activity: 'Building via OpenCode', seat: 4 },
     ])
-    expect(office.summary).toMatchObject({ active: 3, idle: 0 })
+    expect(office.summary).toMatchObject({ active: 3, idle: 1 })
   })
 
   it('keeps quiet agents in the Lounge and shows live work even when the gateway is stopped', () => {
-    const quietOffice = buildOfficeSnapshot(runtime, emptyBoard, emptyActivity, { now: at, agentActivity: live([quiet('default'), quiet('leadengineer')]) })
-    expect(quietOffice.stations.map((station) => [station.state, station.room, station.activity])).toEqual([['Idle', 'Lounge', 'On a break'], ['Idle', 'Lounge', 'On a break'], ['Idle', 'Lounge', 'On a break']])
+    const quietOffice = buildOfficeSnapshot(runtime, emptyBoard, emptyActivity, { now: at, agentActivity: live([quiet('default'), quiet('leadengineer'), quiet('security')]) })
+    expect(quietOffice.stations.map((station) => [station.state, station.room, station.activity])).toEqual([
+      ['Idle', 'Lounge', 'On a break'],
+      ['Idle', 'Lounge', 'On a break'],
+      ['Idle', 'Lounge', 'On a break'],
+      ['Idle', 'Lounge', 'On a break'],
+    ])
     const stopped = buildOfficeSnapshot({ ...runtime, gateways: { ...runtime.gateways, leadEngineer: { availability: 'available', data: 'Stopped' } } }, emptyBoard, emptyActivity, { now: at, agentActivity: live([quiet('default'), { profile: 'leadengineer', availability: 'available', active: true, kind: 'tools', label: 'Using tools', mentionsOpenCode: false }]) })
     expect(stopped.stations[1]).toMatchObject({ state: 'Working', room: 'Workspace', activity: 'Using tools' })
   })
@@ -72,6 +84,7 @@ describe('office placement from live activity', () => {
     expect(office.stations[0]).toMatchObject({ state: 'Working', activity: 'Kanban: Ship v2' })
     expect(office.stations[1].state).toBe('Unknown')
     expect(office.stations[2].state).toBe('Unknown')
+    expect(office.stations[3].state).toBe('Unknown')
   })
 })
 

@@ -55,11 +55,13 @@ describe('Hermes output parsers', () => {
       calls.push([file, ...args])
       if (args.join(' ') === 'profile list') return ' Profile    Model       Gateway\n ───────\n ◆default  gpt-5.6    running\n  leadengineer  gpt-5.5  stopped\n'
       if (args.join(' ') === '-p leadengineer gateway status') return 'running'
+      if (args.join(' ') === '-p security gateway status') return 'running'
       return '1.0.0'
     })
 
     expect(snapshot.gateways.default).toEqual({ availability: 'available', data: 'Running' })
     expect(snapshot.gateways.leadEngineer).toEqual({ availability: 'available', data: 'Running' })
+    expect(snapshot.gateways.security).toEqual({ availability: 'available', data: 'Running' })
     expect(calls).not.toContainEqual(['hermes', 'gateway', 'status'])
   })
 })
@@ -146,6 +148,7 @@ describe('Office snapshot', () => {
     gateways: {
       default: { availability: 'available' as const, data: 'Running' as const },
       leadEngineer: { availability: 'available' as const, data: 'Running' as const },
+      security: { availability: 'available' as const, data: 'Running' as const },
     },
     openCode: { availability: 'available' as const, data: '1.0.0' },
     fetchedAt: '2026-09-27T12:00:00.000Z',
@@ -157,11 +160,12 @@ describe('Office snapshot', () => {
     expect(office.stations).toMatchObject([
       { name: 'Lead Agent', room: 'Lounge', roomPosition: 'lounge-seat-1', state: 'Idle' },
       { name: 'Lead Engineer', room: 'Lounge', roomPosition: 'lounge-seat-2', state: 'Idle' },
-      { name: 'OpenCode', room: 'Lounge', roomPosition: 'lounge-seat-3', state: 'Idle' },
+      { name: 'Cyber Security', room: 'Lounge', roomPosition: 'lounge-seat-3', state: 'Idle' },
+      { name: 'OpenCode', room: 'Lounge', roomPosition: 'lounge-seat-4', state: 'Idle' },
     ])
-    expect(office.stations[2].provenance).toContain('OpenCode version availability is not a state signal')
+    expect(office.stations[3].provenance).toContain('OpenCode version availability is not a state signal')
     expect(office.stations[0].provenance).toContain('Mission Control managed-idle placement policy')
-    expect(office.summary).toEqual({ declared: 3, active: 0, idle: 3, offline: 0, unknown: 0, gatewaysReachable: 2, gatewaysDeclared: 2 })
+    expect(office.summary).toEqual({ declared: 4, active: 0, idle: 4, offline: 0, unknown: 0, gatewaysReachable: 3, gatewaysDeclared: 3 })
   })
 
   it('uses only station-bound stopped gateways and actor-attributed Kanban tasks for work state', () => {
@@ -176,6 +180,7 @@ describe('Office snapshot', () => {
     expect(office.stations).toMatchObject([
       { name: 'Lead Agent', role: 'Lead Agent', avatar: 'lead-agent', workstation: 'Command desk', room: 'Lounge', state: 'Idle', currentTask: 'No attributed task', recentActivity: 'No attributed recent activity' },
       { name: 'Lead Engineer', room: 'Workspace', state: 'Reviewing', currentTask: 'Review the office', recentActivity: 'No attributed recent activity' },
+      { name: 'Cyber Security', room: 'Lounge', state: 'Idle', currentTask: 'No attributed task' },
       { name: 'OpenCode', room: 'Lounge', state: 'Idle', currentTask: 'No attributed task' },
     ])
   })
@@ -184,8 +189,8 @@ describe('Office snapshot', () => {
     const unavailable = buildOfficeSnapshot(runtime, { tasks: { availability: 'unavailable', data: [] }, fetchedAt: runtime.fetchedAt }, { sessions: { availability: 'available', data: [] }, fetchedAt: runtime.fetchedAt }, { now: runtime.fetchedAt })
     const stale = buildOfficeSnapshot(runtime, { tasks: { availability: 'available', data: [] }, fetchedAt: '2026-09-27T11:58:00.000Z' }, { sessions: { availability: 'available', data: [] }, fetchedAt: runtime.fetchedAt }, { now: runtime.fetchedAt })
 
-    expect(unavailable.stations.map((station) => station.state)).toEqual(['Unknown', 'Unknown', 'Unknown'])
-    expect(stale.stations.map((station) => station.state)).toEqual(['Unknown', 'Unknown', 'Unknown'])
+    expect(unavailable.stations.map((station) => station.state)).toEqual(['Unknown', 'Unknown', 'Unknown', 'Unknown'])
+    expect(stale.stations.map((station) => station.state)).toEqual(['Unknown', 'Unknown', 'Unknown', 'Unknown'])
   })
 
   it('maps office states to rooms and keeps unknown agents in a labelled neutral workspace position', () => {
@@ -193,13 +198,14 @@ describe('Office snapshot', () => {
     expect(office.stations).toMatchObject([
       { name: 'Lead Agent', room: 'Lounge', roomPosition: 'lounge-seat-1' },
       { name: 'Lead Engineer', room: 'Lounge', roomPosition: 'lounge-seat-2' },
-      { name: 'OpenCode', room: 'Lounge', roomPosition: 'lounge-seat-3' },
+      { name: 'Cyber Security', room: 'Lounge', roomPosition: 'lounge-seat-3' },
+      { name: 'OpenCode', room: 'Lounge', roomPosition: 'lounge-seat-4' },
     ])
   })
 
   it('summarizes only declared office states and reports gateway health separately', () => {
     const office = buildOfficeSnapshot(runtime, { tasks: { availability: 'available', data: [] }, fetchedAt: runtime.fetchedAt }, { sessions: { availability: 'available', data: [] }, fetchedAt: runtime.fetchedAt }, { now: runtime.fetchedAt })
-    expect(buildOfficeSummary(office.stations, runtime)).toEqual({ declared: 3, active: 0, idle: 3, offline: 0, unknown: 0, gatewaysReachable: 2, gatewaysDeclared: 2 })
+    expect(buildOfficeSummary(office.stations, runtime)).toEqual({ declared: 4, active: 0, idle: 4, offline: 0, unknown: 0, gatewaysReachable: 3, gatewaysDeclared: 3 })
   })
 
   it('gives a fresh direct stopped gateway precedence over Kanban and never turns OpenCode version into a work state', () => {
@@ -212,7 +218,7 @@ describe('Office snapshot', () => {
     }, { sessions: { availability: 'unavailable', data: [], error: { code: 'COMMAND_FAILED', message: 'Read command was unavailable.' } }, fetchedAt: '2026-09-27T12:00:00.000Z' }, { now: runtime.fetchedAt })
 
     expect(office.stations[0]).toMatchObject({ name: 'Lead Agent', state: 'Offline', currentTask: 'Active lead work', recentActivity: 'Not Available' })
-    expect(office.stations[2]).toMatchObject({ name: 'OpenCode', state: 'Unknown' })
+    expect(office.stations[3]).toMatchObject({ name: 'OpenCode', state: 'Unknown' })
   })
 
   it('does not turn unassigned work, generic sessions, gateway Running, or a version into active state', () => {
@@ -222,7 +228,7 @@ describe('Office snapshot', () => {
       sessions: { availability: 'available', data: [{ title: 'Generic session', preview: 'work', lastActive: 'now' }] }, fetchedAt: runtime.fetchedAt,
     }, { now: runtime.fetchedAt })
 
-    expect(office.stations.map((station) => station.state)).toEqual(['Idle', 'Idle', 'Idle'])
+    expect(office.stations.map((station) => station.state)).toEqual(['Idle', 'Idle', 'Idle', 'Idle'])
   })
 
   it('uses a fresh explicit overlay before attributed work and expires it', () => {

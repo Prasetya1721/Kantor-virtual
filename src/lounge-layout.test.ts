@@ -14,6 +14,7 @@ describe('Lounge station layout', () => {
     const sofa = loungeSeat('lounge-seat-1')
     const leftChair = loungeSeat('lounge-seat-2')
     const rightChair = loungeSeat('lounge-seat-3')
+    const sofaTwo = loungeSeat('lounge-seat-4')
 
     expect(sofa).toContain('left: 37%')
     expect(sofa).toContain('right: auto')
@@ -21,6 +22,8 @@ describe('Lounge station layout', () => {
     expect(leftChair).toContain('right: auto')
     expect(rightChair).toContain('left: auto')
     expect(rightChair).toContain('right: 9%')
+    expect(sofaTwo).toContain('left: 53%')
+    expect(sofaTwo).toContain('right: auto')
   })
 })
 

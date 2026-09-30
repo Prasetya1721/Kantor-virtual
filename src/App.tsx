@@ -44,7 +44,7 @@ function Shell({ onRefresh }: { onRefresh: () => void }) {
     window.scrollTo?.({ top: 0 })
   }
   const syncLabel = data ? `TERSINKRON ${formatTime(data.fetchedAt)}${dashboard.status === 'ready' && dashboard.stale ? ' · USANG' : ''}` : dashboard.status === 'failed' ? 'API TIDAK TERSEDIA' : 'MENGHUBUNGKAN...'
-  const failedGateways = data ? 2 - data.office.gatewaysReachable : 0
+  const failedGateways = data ? data.office.gatewaysDeclared - data.office.gatewaysReachable : 0
   const pendingReviews = data?.tasks.byStatus.review ?? 0
 
   return <div className={`app${sidebarHidden ? ' sidebar-hidden' : ''}`}><aside id="app-sidebar" hidden={sidebarHidden}><a className="brand" href="#/dashboard" onClick={(event) => { event.preventDefault(); navigate('Dashboard') }}>MC<span>01</span></a>

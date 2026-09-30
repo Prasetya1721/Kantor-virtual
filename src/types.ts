@@ -3,7 +3,7 @@ export type GatewayState = 'Running' | 'Stopped' | 'Unknown'
 export interface Source<T> { availability: Availability; data: T; error?: { code: string; message: string } }
 export interface RuntimeSnapshot {
   profiles: Source<{ name: string; model: string }[]>
-  gateways: { default: Source<GatewayState>; leadEngineer: Source<GatewayState> }
+  gateways: { default: Source<GatewayState>; leadEngineer: Source<GatewayState>; security?: Source<GatewayState> }
   openCode: Source<string>
   fetchedAt: string
 }
@@ -20,7 +20,7 @@ export interface ChannelSnapshot { channels: Source<Channel[]>; activeSessions?:
 export type OfficeState = 'Idle' | 'Working' | 'Reviewing' | 'Collaborating' | 'Offline' | 'Unknown'
 export type OfficeRoom = 'Workspace' | 'Lounge'
 export interface OfficeStation {
-  name: 'Lead Agent' | 'Lead Engineer' | 'OpenCode'
+  name: 'Lead Agent' | 'Lead Engineer' | 'Cyber Security' | 'OpenCode'
   role: string
   avatar: string
   workstation: string

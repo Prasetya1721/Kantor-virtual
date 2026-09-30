@@ -52,7 +52,7 @@ export function Dashboard({ dashboard, pending = false, onNavigate }: { dashboar
     )}
 
     <section className="stat-grid" aria-label="Statistik utama">
-      <StatTile label="Gateway Berjalan" value={`${office.gatewaysReachable} / ${office.gatewaysDeclared}`} detail="Lead Agent + Engineer" onClick={go('Agents')}/>
+      <StatTile label="Gateway Berjalan" value={`${office.gatewaysReachable} / ${office.gatewaysDeclared}`} detail="Hermes Gateways" onClick={go('Agents')}/>
       <StatTile label="Tim AI Aktif" value={`${office.active} / ${office.declared}`} detail={`${office.idle} santai · ${office.offline} luring · ${office.unknown} tidak diketahui`} onClick={go('Office')}/>
       <StatTile label="Tugas Terbuka" value={tasks.availability === 'available' ? formatNumber(openTasks) : 'Tidak Tersedia'} detail={tasks.availability === 'available' ? `${formatNumber(tasks.total)} total · ${tasks.byStatus.running ?? 0} berjalan` : undefined} onClick={go('Task Board')}/>
       <StatTile label="Jadwal Otomatis" value={availableCount(calendar, 'jadwal')} detail={calendar.availability === 'available' ? `${calendar.active} aktif · ${calendar.paused} dijeda` : undefined} onClick={go('Calendar')}/>
@@ -123,6 +123,7 @@ export function Dashboard({ dashboard, pending = false, onNavigate }: { dashboar
         <dl className="runtime-list">
           <div><dt>Gateway Lead Agent</dt><dd><RuntimeBadge source={runtime.gateways.default}/></dd></div>
           <div><dt>Gateway Lead Engineer</dt><dd><RuntimeBadge source={runtime.gateways.leadEngineer}/></dd></div>
+          {runtime.gateways.security && <div><dt>Gateway Cyber Security</dt><dd><RuntimeBadge source={runtime.gateways.security}/></dd></div>}
           <div><dt>Versi OpenCode</dt><dd>{runtime.openCode.availability === 'available' ? runtime.openCode.data : 'Tidak Tersedia'}</dd></div>
           <div><dt>Model Lead Agent</dt><dd>{runtime.profiles.availability === 'unavailable' ? 'Tidak Tersedia' : lead?.model ?? 'Tidak Diketahui'}</dd></div>
           <div><dt>Profil Hermes Terdaftar</dt><dd>{runtime.profiles.availability === 'available' ? `${runtime.profiles.data.length} profil` : 'Tidak Tersedia'}</dd></div>

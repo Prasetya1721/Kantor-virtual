@@ -28,7 +28,7 @@ export interface Source<T> {
 }
 export interface RuntimeSnapshot {
   profiles: Source<Profile[]>
-  gateways: { default: Source<GatewayState>; leadEngineer: Source<GatewayState> }
+  gateways: { default: Source<GatewayState>; leadEngineer: Source<GatewayState>; security?: Source<GatewayState> }
   openCode: Source<string>
   fetchedAt: string
 }
@@ -45,7 +45,7 @@ export interface ChannelSnapshot { channels: Source<Channel[]>; activeSessions?:
 export type OfficeState = 'Idle' | 'Working' | 'Reviewing' | 'Collaborating' | 'Offline' | 'Unknown'
 export type OfficeRoom = 'Workspace' | 'Lounge'
 export interface OfficeStation {
-  name: 'Lead Agent' | 'Lead Engineer' | 'OpenCode'
+  name: 'Lead Agent' | 'Lead Engineer' | 'Cyber Security' | 'OpenCode'
   role: string
   avatar: string
   workstation: string
@@ -494,14 +494,15 @@ async function read<T>(run: Run, file: string, args: string[], parse: (output: s
 // Collectors
 
 export async function collectSnapshot(run: Run = systemRun): Promise<RuntimeSnapshot> {
-  const [profileData, leadEngineerGateway, openCode] = await Promise.all([
+  const [profileData, leadEngineerGateway, securityGateway, openCode] = await Promise.all([
     read(run, 'hermes', ['profile', 'list'], (output) => ({ profiles: parseProfiles(output), gateway: parseDefaultProfileGateway(output) }), { profiles: [], gateway: 'Unknown' as GatewayState }),
     read(run, 'hermes', ['-p', 'leadengineer', 'gateway', 'status'], parseGatewayStatus, 'Unknown'),
+    read(run, 'hermes', ['-p', 'security', 'gateway', 'status'], parseGatewayStatus, 'Unknown'),
     read(run, 'opencode', ['--version'], (value) => value.trim().split('\n').pop()?.trim() || 'Unknown', 'Unknown'),
   ])
   const profiles: Source<Profile[]> = { availability: profileData.availability, data: profileData.data.profiles, ...(profileData.error && { error: profileData.error }) }
   const defaultGateway: Source<GatewayState> = { availability: profileData.availability, data: profileData.availability === 'available' ? profileData.data.gateway : 'Unknown', ...(profileData.error && { error: profileData.error }) }
-  return { profiles, gateways: { default: defaultGateway, leadEngineer: leadEngineerGateway }, openCode, fetchedAt: new Date().toISOString() }
+  return { profiles, gateways: { default: defaultGateway, leadEngineer: leadEngineerGateway, security: securityGateway }, openCode, fetchedAt: new Date().toISOString() }
 }
 
 export async function collectTaskBoard(run: Run = systemRun): Promise<TaskBoardSnapshot> {
@@ -664,7 +665,7 @@ export async function collectTaskDetail(id: string, run: Run = systemRun): Promi
 // session active in the last few minutes is direct, attributable evidence of work.
 
 export const ACTIVITY_WINDOW = '3m'
-const ACTIVITY_PROFILES = ['default', 'leadengineer'] as const
+const ACTIVITY_PROFILES = ['default', 'leadengineer', 'security'] as const
 const LOG_RECORD = /^(\d{4}-\d{2}-\d{2}[ T][\d:,.]+)\s+[A-Z]+(?:\s+\[[^\]]*\])?\s+([\w.]+):\s?(.*)$/
 const CHAT_MESSAGE = /\b(message|reply|replied|respond|inbound|outbound|received|sending|sent|chat)\b/i
 const ACTIVITY_LABELS: Record<ActivityKind, string> = {
@@ -724,6 +725,7 @@ export async function collectAgentActivity(run: Run = systemRun): Promise<AgentA
 const officeMetadata = [
   { name: 'Lead Agent', role: 'Lead Agent', avatar: 'lead-agent', workstation: 'Command desk', profile: 'default', aliases: ['default', 'lead agent', 'lead-agent', 'leadagent'] },
   { name: 'Lead Engineer', role: 'Lead Engineer', avatar: 'lead-engineer', workstation: 'Engineering desk', profile: 'leadengineer', aliases: ['leadengineer', 'lead engineer', 'lead-engineer'] },
+  { name: 'Cyber Security', role: 'Cyber Security', avatar: 'cyber-security', workstation: 'Security console', profile: 'security', aliases: ['security', 'cybersecurity', 'cyber security', 'cyber-security'] },
   { name: 'OpenCode', role: 'OpenCode', avatar: 'opencode', workstation: 'Build terminal', profile: undefined, aliases: ['opencode', 'open-code'] },
 ] as const
 
@@ -774,7 +776,7 @@ function roomForState(state: OfficeState, index: number): Pick<OfficeStation, 'r
 }
 
 export function buildOfficeSummary(stations: OfficeStation[], runtime: RuntimeSnapshot): OfficeSummary {
-  const gateways = [runtime.gateways.default, runtime.gateways.leadEngineer]
+  const gateways = [runtime.gateways.default, runtime.gateways.leadEngineer, runtime.gateways.security].filter(Boolean) as Source<GatewayState>[]
   return {
     declared: stations.length,
     active: stations.filter((station) => ['Working', 'Reviewing', 'Collaborating'].includes(station.state)).length,
@@ -807,7 +809,7 @@ export function buildOfficeSnapshot(runtime: RuntimeSnapshot, board: TaskBoardSn
   const agentActivity = options.agentActivity && isFresh(options.agentActivity.fetchedAt, now) ? options.agentActivity : undefined
   const explicitStates = options.explicitStates ?? []
   const stations = officeMetadata.map((metadata, index): OfficeStation => {
-    const gateway = index === 0 ? runtime.gateways.default : index === 1 ? runtime.gateways.leadEngineer : undefined
+    const gateway = metadata.profile === 'default' ? runtime.gateways.default : metadata.profile === 'leadengineer' ? runtime.gateways.leadEngineer : metadata.profile === 'security' ? runtime.gateways.security : undefined
     const task = freshBoard ? attributedTask(board.tasks.data, metadata.aliases) : undefined
     const overlay = explicitState(metadata, explicitStates, now)
     const taskWorkState = taskState(task)

@@ -203,7 +203,7 @@ export async function readFolderFile(folder: Pick<AgentFolder, 'profile' | 'dire
   }
 }
 
-const LABELS: Record<string, string> = { default: 'Lead Agent', leadengineer: 'Lead Engineer', opencode: 'OpenCode' }
+const LABELS: Record<string, string> = { default: 'Lead Agent', leadengineer: 'Lead Engineer', security: 'Cyber Security', opencode: 'OpenCode' }
 
 function displayPath(directory: string, home: string): string {
   const relative = path.relative(home, directory).replace(/\\/g, '/')
