@@ -18,7 +18,13 @@ export interface KnowledgeSnapshot { skills: Source<Skill[]>; fetchedAt: string 
 export interface Channel { name: string; status: 'Configured' | 'Connected' }
 export interface ChannelSnapshot { channels: Source<Channel[]>; activeSessions?: number; fetchedAt: string }
 export type OfficeState = 'Idle' | 'Working' | 'Reviewing' | 'Collaborating' | 'Offline' | 'Unknown'
-export type OfficeRoom = 'Workspace' | 'Lounge'
+/**
+ * Rooms are a viewer concern, not a status signal. Only `Workspace` and `Lounge` ever receive an
+ * agent, and only because an observed state maps there (see `roomForState`). `Survey` and
+ * `Documents` are read-only rooms over real work: they render live counters but never place an
+ * agent, because Hermes exposes no signal that would justify where a crew member "belongs".
+ */
+export type OfficeRoom = 'Workspace' | 'Lounge' | 'Survey' | 'Documents'
 export interface OfficeStation {
   name: 'Lead Agent' | 'Lead Engineer' | 'OpenCode'
   role: string
