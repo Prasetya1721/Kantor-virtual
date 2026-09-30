@@ -4,19 +4,7 @@ import { usePolling } from '../polling.ts'
 import type { ActivitySnapshot, ChannelSnapshot, OfficeRoom, OfficeSnapshot, OfficeStation } from '../types.ts'
 import { LoadingState, SourceStatus } from '../ui.tsx'
 
-/**
- * Workspace and Lounge are crew rooms: an observed state puts an agent there. Survey and Documents
- * are observation rooms that render real counters but never host an agent — Hermes exposes no
- * signal that could honestly place a crew member in them (PRD FR-VO-04, AC-G2).
- */
-const ROOMS: OfficeRoom[] = ['Workspace', 'Survey', 'Documents', 'Lounge']
-const CREW_ROOMS: OfficeRoom[] = ['Workspace', 'Lounge']
-const ROOM_SUBTITLE: Record<OfficeRoom, string> = {
-  Workspace: 'DESKS + COLLABORATION',
-  Lounge: 'QUIET BREAK AREA',
-  Survey: 'SURVEY + COMPLIANCE WATCH',
-  Documents: 'CERTIFICATES + AUDIT TRAIL',
-}
+const ROOMS: OfficeRoom[] = ['Workspace', 'Lounge']
 
 export function PixelCharacter({ avatar }: { avatar: string }) {
   return <span className={`pixel-character ${avatar}`} aria-hidden="true"><span className="character-hair"/><span className="character-head"><i/><b/></span><span className="character-torso"/><span className="character-arm left"/><span className="character-arm right"/><span className="character-leg left"/><span className="character-leg right"/></span>
@@ -73,7 +61,6 @@ export function Office() {
   const desks = (office?.stations ?? []).map((station) => ({ seat: station.seat, workstation: station.workstation, occupied: station.room === 'Workspace' && station.roomPosition !== 'meeting-area' }))
   const sessions = activity?.sessions
   const channelSource = channels?.channels
-  const isCrewRoom = CREW_ROOMS.includes(room)
   const closeDetail = () => {
     setSelectedName(undefined)
     selectedTrigger.current?.focus()
@@ -83,13 +70,9 @@ export function Office() {
     <SourceStatus source={office ? { availability: 'available', data: null } : undefined} fetchedAt={office?.fetchedAt} request={snapshot}/>
     <section className="office-dashboard" aria-label="Visual Office">
       <div className="office-main"><div className="room-tabs" role="tablist" aria-label="Office rooms">{ROOMS.map((item) => <button role="tab" aria-selected={room === item} className={room === item ? 'active' : ''} onClick={() => setChosenRoom(item)} key={item}>{item} <span className="room-count">{counts[item]}</span></button>)}</div>
-        <div className="room-scroll"><section className={`pixel-room ${room.toLowerCase()}`} aria-label={`${room} room`}><div className="room-label"><span>{room}</span><small>{ROOM_SUBTITLE[room]}</small></div><div className="pixel-window window-one" aria-hidden="true"/><div className="pixel-window window-two" aria-hidden="true"/><div className="pixel-door" aria-hidden="true"/>
+        <div className="room-scroll"><section className={`pixel-room ${room.toLowerCase()}`} aria-label={`${room} room`}><div className="room-label"><span>{room}</span><small>{room === 'Workspace' ? 'DESKS + COLLABORATION' : 'QUIET BREAK AREA'}</small></div><div className="pixel-window window-one" aria-hidden="true"/><div className="pixel-window window-two" aria-hidden="true"/><div className="pixel-door" aria-hidden="true"/>
           {room === 'Workspace' ? <><div className="pixel-shelf" aria-hidden="true"/><div className="pixel-plant plant-one" aria-hidden="true"/><div className="meeting-table" aria-hidden="true"><span>MEET</span></div>
-            {desks.map((desk) => <div className={`ws-desk desk-${desk.seat}${desk.occupied ? ' occupied' : ''}`} key={desk.seat} aria-hidden="true"><i/><span className="desk-plate">{desk.workstation}</span></div>)}</>
-            : room === 'Lounge' ? <><div className="lounge-sofa" aria-hidden="true"/><div className="lounge-chair chair-one" aria-hidden="true"/><div className="lounge-chair chair-two" aria-hidden="true"/><div className="coffee-table" aria-hidden="true"/><div className="pixel-tv" aria-hidden="true"/><div className="pixel-plant plant-two" aria-hidden="true"/></>
-            : room === 'Survey' ? <><div className="obs-rack rack-one" aria-hidden="true"><span>DOC</span></div><div className="obs-rack rack-two" aria-hidden="true"><span>SMC</span></div><div className="obs-board" aria-hidden="true"><span>ISM</span></div><div className="obs-desk" aria-hidden="true"/><div className="pixel-plant plant-two" aria-hidden="true"/></>
-            : <><div className="obs-shelf shelf-left" aria-hidden="true"/><div className="obs-shelf shelf-right" aria-hidden="true"/><div className="obs-docket" aria-hidden="true"><span>AUDIT</span></div><div className="obs-desk" aria-hidden="true"/></>}
-          {!isCrewRoom && <p className="obs-note">Observation room. It shows real counters only — no crew is placed here, because Hermes reports no signal that would place one.</p>}
+            {desks.map((desk) => <div className={`ws-desk desk-${desk.seat}${desk.occupied ? ' occupied' : ''}`} key={desk.seat} aria-hidden="true"><i/><span className="desk-plate">{desk.workstation}</span></div>)}</> : <><div className="lounge-sofa" aria-hidden="true"/><div className="lounge-chair chair-one" aria-hidden="true"/><div className="lounge-chair chair-two" aria-hidden="true"/><div className="coffee-table" aria-hidden="true"/><div className="pixel-tv" aria-hidden="true"/><div className="pixel-plant plant-two" aria-hidden="true"/></>}
           {stations.map((station) => { const badge = officeStateBadge(station.state); const busy = ['Working', 'Reviewing', 'Collaborating'].includes(station.state); return <button className={`pixel-station ${station.roomPosition} seat-${station.seat} state-${station.state.toLowerCase()}`} key={station.name} onClick={(event) => { selectedTrigger.current = event.currentTarget; setSelectedName(station.name) }} aria-label={`${station.name}. ${officeStateLabel(station)}${station.activity ? `: ${station.activity}` : ''}. Open station details.`} title={station.activity || officeStateLabel(station)}>{busy && station.activity && <span className="speech" aria-hidden="true">{station.activity}</span>}<span className="pixel-station-name">{station.name}</span><span className={`badge ${badge.tone}`}>{officeStateLabel(station)}</span>{station.state === 'Unknown' && <span className="neutral-label">NEUTRAL PRESENCE</span>}<PixelCharacter avatar={station.avatar}/></button> })}
           {room === 'Lounge' && stations.length === 0 && <p className="room-empty">No declared idle presence</p>}
           {room === 'Workspace' && stations.length === 0 && office && <p className="room-empty">Desks are empty · crew is in the Lounge</p>}

@@ -748,9 +748,6 @@ function roomForState(state: OfficeState, index: number): Pick<OfficeStation, 'r
   return { room: 'Workspace', roomPosition: 'neutral-presence' }
 }
 
-/** Survey and Documents are observation rooms: they hold work, not crew. See `OfficeRoom`. */
-export const OBSERVATION_ROOMS = ['Survey', 'Documents'] as const
-
 export function buildOfficeSummary(stations: OfficeStation[], runtime: RuntimeSnapshot): OfficeSummary {
   const gateways = [runtime.gateways.default, runtime.gateways.leadEngineer]
   return {
