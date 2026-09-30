@@ -724,9 +724,9 @@ export async function collectAgentActivity(run: Run = systemRun): Promise<AgentA
 
 const officeMetadata = [
   { name: 'Lead Agent', role: 'Lead Agent', avatar: 'lead-agent', workstation: 'Command desk', profile: 'default', aliases: ['default', 'lead agent', 'lead-agent', 'leadagent'] },
-  { name: 'Lead Engineer', role: 'Lead Engineer', avatar: 'lead-engineer', workstation: 'Engineering desk', profile: 'leadengineer', aliases: ['leadengineer', 'lead engineer', 'lead-engineer'] },
-  { name: 'Cyber Security', role: 'Cyber Security', avatar: 'cyber-security', workstation: 'Security console', profile: 'security', aliases: ['security', 'cybersecurity', 'cyber security', 'cyber-security'] },
-  { name: 'OpenCode', role: 'OpenCode', avatar: 'opencode', workstation: 'Build terminal', profile: undefined, aliases: ['opencode', 'open-code'] },
+  { name: 'Lead Engineer', role: 'Lead Engineer', avatar: 'lead-engineer', workstation: 'Engineering desk', profile: 'leadengineer', aliases: ['leadengineer', 'lead engineer', 'lead-engineer', 'engineer', 'pm', 'project manager', 'architect'] },
+  { name: 'Cyber Security', role: 'Cyber Security', avatar: 'cyber-security', workstation: 'Security console', profile: 'security', aliases: ['security', 'cybersecurity', 'cyber security', 'cyber-security', 'auditor'] },
+  { name: 'OpenCode', role: 'OpenCode', avatar: 'opencode', workstation: 'Build terminal', profile: undefined, aliases: ['opencode', 'open-code', 'frontend', 'front-end', 'backend', 'back-end', 'fullstack', 'full-stack', 'ui/ux', 'qa', 'tester'] },
 ] as const
 
 export const officeRooms = [

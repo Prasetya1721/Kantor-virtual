@@ -499,3 +499,21 @@ main { max-width: 1680px; }
 .context-list { display: grid; gap: 6px; list-style: none; margin: 0; padding: 0; }
 @media (max-width: 900px) { .memory-grid { grid-template-columns: minmax(0, 1fr); } }
 .version-notice { margin-top: 16px; }
+
+/* ---- Engineering Division Sub-roles ---- */
+.engineering-section { margin-top: 36px; border-top: 1px solid var(--border); padding-top: 24px; }
+.engineering-banner { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid #70bdcb; padding: 14px 18px; margin: 16px 0 24px; border-radius: 4px; }
+.engineering-banner p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--text); }
+.engineering-banner small { color: var(--text-dim); display: block; margin-top: 6px; }
+.role-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.role-card { background: var(--surface); border: 1px solid var(--border); padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.role-card header { border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; }
+.role-card h3 { margin: 0; font-size: 16px; font-weight: 600; color: var(--text); }
+.role-badge { font: 10px ui-monospace, monospace; padding: 2px 6px; border-radius: 3px; }
+.role-badge.core { background: #1c352f; color: #79d6bd; border: 1px solid #2e594f; }
+.role-badge.supporting { background: #352a1d; color: #f2c58a; border: 1px solid #5a4630; }
+.role-desc { font-size: 13px; line-height: 1.45; color: var(--text-muted); margin: 0; }
+.role-list { margin: 6px 0 0; padding-left: 18px; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.role-skills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; padding-top: 8px; }
+.role-tag { background: var(--surface-2); color: var(--accent); font: 10px ui-monospace, monospace; padding: 2px 6px; border-radius: 3px; border: 1px solid var(--border); }
+.role-footer { font: 11px ui-monospace, monospace; color: var(--text-dim); border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 6px; }
