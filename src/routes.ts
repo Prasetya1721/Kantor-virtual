@@ -1,4 +1,4 @@
-export const navigation = ['Dashboard', 'Agents', 'Office', 'Task Board', 'Calendar', 'Activity', 'Memory', 'Folders', 'Logs'] as const
+export const navigation = ['Dashboard', 'Agents', 'Office', 'Task Board', 'Build', 'Calendar', 'Activity', 'Memory', 'Folders', 'Logs'] as const
 export type Page = typeof navigation[number]
 
 export function pageSlug(page: Page): string {

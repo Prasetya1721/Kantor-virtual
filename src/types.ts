@@ -104,6 +104,9 @@ export interface TaskDetail {
   runs: { id: string; profile?: string; status?: string; outcome?: string; summary?: string; error?: string; startedAt?: string; endedAt?: string }[]
 }
 export interface TaskDetailSnapshot { task: Source<TaskDetail | null>; fetchedAt: string }
+/** OpenCode's own build sessions, read from its private SQLite store. Never fabricated. */
+export interface OpenCodeBuildSession { id: string; directory: string; title: string; model?: string; provider?: string; created: string; updated: string; tokensInput: number; tokensOutput: number }
+export interface OpenCodeBuildSnapshot { availability: Availability; version: string; sessions: OpenCodeBuildSession[]; totalSessions: number; error?: { code: string; message: string }; fetchedAt: string }
 export interface MemoryDocument { name: string; path: string; exists: boolean; size?: number; modified?: string; chars?: number; content?: string; truncated?: boolean; redactions?: number; error?: string }
 export interface MemoryStore extends MemoryDocument { entries: string[]; limit: number; used: number; percent: number }
 export interface MemorySettings { memoryEnabled: boolean; userProfileEnabled: boolean; writeApproval: boolean; provider?: string; memoryLimit: number; userLimit: number; source: 'config.yaml' | 'defaults' }

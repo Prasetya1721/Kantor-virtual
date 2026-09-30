@@ -4,6 +4,7 @@ import express, { type NextFunction, type Request, type Response } from 'express
 import { excludedFor, FolderError, listFolder, publicAgent, readFolderFile, resolveAgentFolders } from './folders.js'
 import { API_VERSION } from './api-version.js'
 import { collectMemory } from './memory.js'
+import { collectOpenCodeBuild } from './opencode-build.js'
 import { getActivity, getCalendar, getChannels, getCommandLog, getDashboard, getKnowledge, getLogs, getOffice, getSnapshot, getTaskBoard, getTaskDetail } from './mission-control.js'
 
 const HOST = '127.0.0.1'
@@ -44,6 +45,17 @@ app.get('/api/tasks/:id', async (request, response) => {
   const detail = await getTaskDetail(String(request.params.id))
   if (!detail) { response.status(404).json({ error: 'Unknown task.' }); return }
   response.json(detail)
+})
+
+// OpenCode build activity: cached for 10 seconds, refreshed manually with ?fresh=1.
+let buildCache: { value: Awaited<ReturnType<typeof collectOpenCodeBuild>>; expires: number } | undefined
+app.get('/api/build', async (request, response) => {
+  const now = Date.now()
+  const fresh = request.query.fresh === '1'
+  if (!buildCache || buildCache.expires <= now || (fresh && now - (buildCache.expires - 10_000) > 2_000)) {
+    buildCache = { value: await collectOpenCodeBuild(now), expires: now + 10_000 }
+  }
+  response.json(buildCache.value)
 })
 
 // Folders: read-only view of each agent's own folder. Only agents Mission Control resolved

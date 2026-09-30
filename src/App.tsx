@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { formatTime } from './format.ts'
 import { Activity } from './pages/Activity.tsx'
 import { Agents } from './pages/Agents.tsx'
+import { Build } from './pages/Build.tsx'
 import { Calendar } from './pages/Calendar.tsx'
 import { Dashboard } from './pages/Dashboard.tsx'
 import { Folders } from './pages/Folders.tsx'
@@ -50,7 +51,7 @@ function Shell({ onRefresh }: { onRefresh: () => void }) {
     <div className="sidebar-note"><span className="dot"/> READ-ONLY MODE</div><button type="button" className="sidebar-theme" onClick={toggleTheme}>{theme === 'dark' ? '☀ Light mode' : '☾ Dark mode'}</button></aside>
     <main><header><span className="header-title"><button type="button" className="icon-button" onClick={toggleSidebar} aria-controls="app-sidebar" aria-expanded={!sidebarHidden} aria-label={sidebarHidden ? 'Show menu' : 'Hide menu'} title={sidebarHidden ? 'Show menu' : 'Hide menu'}>{sidebarHidden ? '☰' : '⟨'}</button><span>MISSION CONTROL / {page.toUpperCase()}</span></span><span className="header-actions"><span className={dashboard.status === 'failed' ? 'text-bad' : ''}>{syncLabel}</span><button type="button" className="icon-button theme-toggle" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>{theme === 'dark' ? '☀' : '☾'}<span>{theme === 'dark' ? 'LIGHT' : 'DARK'}</span></button><button type="button" className="refresh-button" onClick={onRefresh} aria-label="Refresh all sources">↻ REFRESH ALL</button></span></header>
       {versionNotice && <section className="notice version-notice" role="alert"><strong>Restart needed.</strong> {versionNotice}</section>}
-      {page === 'Dashboard' ? <Dashboard dashboard={data} pending={dashboard.status === 'pending'} onNavigate={navigate}/> : page === 'Agents' ? <Agents runtime={data?.runtime ?? null} pending={dashboard.status === 'pending'}/> : page === 'Office' ? <Office/> : page === 'Task Board' ? <TaskBoard/> : page === 'Calendar' ? <Calendar/> : page === 'Activity' ? <Activity/> : page === 'Memory' ? <Memory onOpenFolders={() => navigate('Folders')}/> : page === 'Folders' ? <Folders/> : <Logs/>}
+      {page === 'Dashboard' ? <Dashboard dashboard={data} pending={dashboard.status === 'pending'} onNavigate={navigate}/> : page === 'Agents' ? <Agents runtime={data?.runtime ?? null} pending={dashboard.status === 'pending'}/> : page === 'Office' ? <Office/> : page === 'Task Board' ? <TaskBoard/> : page === 'Build' ? <Build/> : page === 'Calendar' ? <Calendar/> : page === 'Activity' ? <Activity/> : page === 'Memory' ? <Memory onOpenFolders={() => navigate('Folders')}/> : page === 'Folders' ? <Folders/> : <Logs/>}
     </main></div>
 }
 
