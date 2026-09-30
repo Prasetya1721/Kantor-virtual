@@ -5,7 +5,7 @@
 | **Versi** | 1.0 (Draf untuk persetujuan) |
 | **Tanggal** | 30 September 2026 |
 | **Pemilik Produk** | Prasetya |
-| **Status** | Menunggu persetujuan Fase 0 (Discovery) |
+| **Status** | Selesai (Fase 0 hingga 6 Terimplementasi & Terverifikasi) |
 | **Dokumen acuan** | "Hermes + OpenCode Mission Control – Simple Copy-Paste Prompt Pack" |
 
 > **Catatan penyusunan.** Dokumen acuan berbentuk paket prompt, bukan PRD. PRD ini mempertahankan seluruh maksud aslinya (struktur agent, modul, Visual Office, aturan "jangan mengarang data") lalu menambahkan hal yang belum ada: masalah dan metrik, persona, ID kebutuhan yang bisa diuji, model asal-usul data, aturan status, keamanan, arsitektur, risiko, dan fase rilis. Semua hal tentang API/data Hermes yang belum terverifikasi ditandai **[Verifikasi di Fase 0]** dan tidak boleh diasumsikan.
