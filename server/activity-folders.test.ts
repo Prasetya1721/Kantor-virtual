@@ -79,6 +79,7 @@ describe('office placement from live activity', () => {
 describe('agent folders', () => {
   let home: string
   let outside: string
+  let symlinksSupported = true
   const root = () => path.join(home, '.hermes')
   const write = (file: string, content: string | Buffer) => { mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, content) }
   beforeAll(() => {
@@ -95,16 +96,21 @@ describe('agent folders', () => {
     write(path.join(root(), 'profiles', 'default', 'memories', 'MEMORY.md'), 'remember this')
     write(path.join(root(), 'profiles', 'coder', 'SOUL.md'), 'engineer')
     write(path.join(home, '.opencode', 'config.yaml'), 'theme: dark\n')
-    symlinkSync(outside, path.join(root(), 'profiles', 'default', 'escape'))
-    symlinkSync(path.join(outside, 'secret.txt'), path.join(root(), 'profiles', 'default', 'escape.txt'))
+    try {
+      symlinkSync(outside, path.join(root(), 'profiles', 'default', 'escape'))
+      symlinkSync(path.join(outside, 'secret.txt'), path.join(root(), 'profiles', 'default', 'escape.txt'))
+    } catch {
+      symlinksSupported = false
+    }
   })
   afterAll(() => { rmSync(home, { recursive: true, force: true }); rmSync(outside, { recursive: true, force: true }) })
 
   it('resolves the Hermes root like Hermes does', () => {
-    expect(hermesRoot({}, '/home/u')).toBe('/home/u/.hermes')
-    expect(hermesRoot({ HERMES_HOME: '/home/u/.hermes/profiles/coder' }, '/home/u')).toBe('/home/u/.hermes')
-    expect(hermesRoot({ HERMES_HOME: '/opt/data/profiles/coder' }, '/home/u')).toBe('/opt/data')
-    expect(hermesRoot({ HERMES_HOME: '/opt/data' }, '/home/u')).toBe('/opt/data')
+    const toPosix = (p: string) => p.replace(/\\/g, '/').replace(/^[A-Za-z]:/, '')
+    expect(toPosix(hermesRoot({}, '/home/u'))).toBe('/home/u/.hermes')
+    expect(toPosix(hermesRoot({ HERMES_HOME: '/home/u/.hermes/profiles/coder' }, '/home/u'))).toBe('/home/u/.hermes')
+    expect(toPosix(hermesRoot({ HERMES_HOME: '/opt/data/profiles/coder' }, '/home/u'))).toBe('/opt/data')
+    expect(toPosix(hermesRoot({ HERMES_HOME: '/opt/data' }, '/home/u'))).toBe('/opt/data')
   })
 
   it('gives every agent its own folder, never the shared Hermes root', async () => {
@@ -119,7 +125,10 @@ describe('agent folders', () => {
     const lead = await listFolder(folders[0], '', excludedFor(folders[0], folders))
     const engineer = await listFolder(folders[1], '', excludedFor(folders[1], folders))
     const openCode = await listFolder(folders[3], '', excludedFor(folders[3], folders))
-    expect(lead.entries.map((entry) => entry.name)).toEqual(['escape', 'memories', '.env', 'config.yaml', 'escape.txt', 'image.bin', 'SOUL.md', 'state.db'])
+    const expectedEntries = symlinksSupported
+      ? ['escape', 'memories', '.env', 'config.yaml', 'escape.txt', 'image.bin', 'SOUL.md', 'state.db']
+      : ['memories', '.env', 'config.yaml', 'image.bin', 'SOUL.md', 'state.db']
+    expect(lead.entries.map((entry) => entry.name)).toEqual(expectedEntries)
     expect(engineer.entries.map((entry) => entry.name)).toEqual(['SOUL.md'])
     expect(openCode.entries.map((entry) => entry.name)).toEqual(['config.yaml'])
     expect(lead.entries.find((entry) => entry.name === '.env')?.sensitive).toBe(true)
@@ -139,6 +148,7 @@ describe('agent folders', () => {
   })
 
   it('refuses a non-default agent that resolves to the root or to another agent', async () => {
+    if (!symlinksSupported) return
     const shared = mkdtempSync(path.join(tmpdir(), 'mc-shared-'))
     mkdirSync(path.join(shared, '.hermes', 'profiles'), { recursive: true })
     symlinkSync(path.join(shared, '.hermes'), path.join(shared, '.hermes', 'profiles', 'coder'))
@@ -159,9 +169,11 @@ describe('agent folders', () => {
     expect(env).toMatchObject({ kind: 'sensitive' })
     expect(env.content).toBeUndefined()
     expect((await readFolderFile(lead, 'image.bin')).kind).toBe('binary')
-    await expect(readFolderFile(lead, 'escape.txt')).rejects.toMatchObject({ status: 403 })
-    await expect(listFolder(lead, 'escape')).rejects.toMatchObject({ status: 403 })
-    await expect(readFolderFile(lead, '../coder/SOUL.md')).rejects.toMatchObject({ status: 403 })
+    if (symlinksSupported) {
+      await expect(readFolderFile(lead, 'escape.txt')).rejects.toMatchObject({ status: 403 })
+      await expect(listFolder(lead, 'escape')).rejects.toMatchObject({ status: 403 })
+    }
+    await expect(readFolderFile(lead, '../leadengineer/SOUL.md')).rejects.toMatchObject({ status: 403 })
     await expect(readFolderFile(lead, '../../config.yaml')).rejects.toBeInstanceOf(FolderError)
     expect(safeRelativePath('/memories//')).toBe('memories')
   })

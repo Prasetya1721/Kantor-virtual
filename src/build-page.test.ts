@@ -53,7 +53,8 @@ print(json.dumps([dict(r) for r in conn.execute('SELECT * FROM session LIMIT 1')
     const dir = mkdtempSync(join(tmpdir(), 'mc-opencode-'))
     try {
       const db = join(dir, 'opencode.db')
-      execFileSync('python3', ['-c', `import sqlite3; c = sqlite3.connect('${db}'); c.execute('CREATE TABLE other (x)'); c.commit()`])
+      const pythonBin = process.platform === 'win32' ? 'python' : 'python3'
+      execFileSync(pythonBin, ['-c', `import sqlite3; c = sqlite3.connect('${db.replace(/\\/g, '\\\\')}'); c.execute('CREATE TABLE other (x)'); c.commit()`])
       const original = process.env.HOME
       process.env.HOME = dir
       try {

@@ -205,8 +205,8 @@ export async function readFolderFile(folder: Pick<AgentFolder, 'profile' | 'dire
 }
 
 function displayPath(directory: string, home: string): string {
-  const relative = path.relative(home, directory)
-  return !relative.startsWith('..') && !path.isAbsolute(relative) ? (relative ? `~/${relative}` : '~') : directory
+  const relative = path.relative(home, directory).replace(/\\/g, '/')
+  return !relative.startsWith('..') && !path.isAbsolute(relative) ? (relative ? `~/${relative}` : '~') : directory.replace(/\\/g, '/')
 }
 
 async function firstDirectory(candidates: string[]): Promise<{ directory: string; real?: string; denied?: boolean }> {
