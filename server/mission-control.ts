@@ -5,9 +5,15 @@ const execFile = promisify(execFileCallback)
 const CACHE_MS = 10_000
 const INSIGHTS_CACHE_MS = 60_000
 // The Dashboard reads eight sources at once, so every `hermes` CLI call competes for the same
-// process budget. Individually each command finishes in 2-5s, but under that concurrency they
+// process budget. Individually each command finishes in 1-2s, but under that concurrency they
 // regularly crossed the old 8s ceiling and reported TIMEOUT for sources that are actually healthy.
 const COMMAND_TIMEOUT_MS = 25_000
+// Every `hermes …` call is a fresh Python process costing ~1.2-1.8s of CPU. This host has 2 CPUs,
+// so letting fifteen of them run at once does not parallelise the work, it queues it: each call
+// then reports ~15s while the machine is simply saturated. Measured on this host: 4 concurrent
+// calls finish in ~1.8s, 8 concurrent calls take ~4x longer. A small fixed gate keeps the latency
+// of the whole page at roughly one round of CLI work instead of N rounds of queueing.
+const COMMAND_CONCURRENCY = 4
 const COMMAND_LOG_LIMIT = 100
 const LOG_TAIL_LINES = 200
 
@@ -419,15 +425,34 @@ function describeFailure(error: unknown): CommandError {
   return new CommandError('Read command was unavailable.', 'COMMAND_FAILED', stdout)
 }
 
+// A tiny FIFO gate. Every CLI read passes through it, so the machine sees at most
+// COMMAND_CONCURRENCY Python processes at a time instead of the whole page's worth.
+export function createConcurrencyGate(limit = COMMAND_CONCURRENCY) {
+  let active = 0
+  const queue: (() => void)[] = []
+  return async function runSlot<T>(work: () => Promise<T>): Promise<T> {
+    if (active >= limit) await new Promise<void>((resolve) => queue.push(resolve))
+    active += 1
+    try {
+      return await work()
+    } finally {
+      active -= 1
+      queue.shift()?.()
+    }
+  }
+}
+
+export const withCommandSlot = createConcurrencyGate(COMMAND_CONCURRENCY)
+
 async function systemRun(file: string, args: string[], options: RunOptions = {}): Promise<string> {
   const started = Date.now()
   const command = [file, ...args].join(' ')
   try {
-    const { stdout } = await execFile(file, args, {
+    const { stdout } = await withCommandSlot(() => execFile(file, args, {
       timeout: COMMAND_TIMEOUT_MS,
       maxBuffer: 2 * 1024 * 1024,
       env: { ...process.env, NO_COLOR: '1', TERM: 'dumb', COLUMNS: '200', PYTHONIOENCODING: 'utf-8' },
-    })
+    }))
     recordCommand({ command, ok: true, durationMs: Date.now() - started, at: new Date(started).toISOString() })
     return stdout
   } catch (error) {
@@ -855,16 +880,26 @@ export function buildDashboard(parts: { runtime: RuntimeSnapshot; board: TaskBoa
 // ---------------------------------------------------------------------------
 // Cached accessors. Concurrent callers share one in-flight read per source.
 
-function cachedSource<T>(collect: () => Promise<T>, ttl = CACHE_MS) {
+export function cachedSource<T>(collect: () => Promise<T>, ttl = CACHE_MS) {
   let entry: { value: T; expires: number } | undefined
   let inflight: Promise<T> | undefined
-  const get = (now = Date.now()): Promise<T> => {
-    if (entry && entry.expires > now) return Promise.resolve(entry.value)
+  const refresh = (): Promise<T> => {
     inflight ??= collect().then((value) => {
       entry = { value, expires: Date.now() + ttl }
       return value
     }).finally(() => { inflight = undefined })
     return inflight
+  }
+  // Stale-while-revalidate: once a source has ever produced a value, callers get that value
+  // immediately and the refresh happens in the background. A cold cache still waits for the first
+  // read (there is nothing honest to show yet), but a warm page never blocks on the CLI again.
+  const get = (now = Date.now()): Promise<T> => {
+    if (entry && entry.expires > now) return Promise.resolve(entry.value)
+    if (entry) {
+      void refresh().catch(() => undefined)
+      return Promise.resolve(entry.value)
+    }
+    return refresh()
   }
   return Object.assign(get, { clear: () => { entry = undefined } })
 }
