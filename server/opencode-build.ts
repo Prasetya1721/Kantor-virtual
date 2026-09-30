@@ -34,9 +34,9 @@ export interface OpenCodeBuildSnapshot {
 
 const RECENT_WINDOW_MS = 6 * 60 * 60 * 1000 // 6 hours of build sessions shown
 
-export async function collectOpenCodeBuild(now = Date.now()): Promise<OpenCodeBuildSnapshot> {
+export async function collectOpenCodeBuild(now = Date.now(), home = homedir()): Promise<OpenCodeBuildSnapshot> {
   const fetchedAt = new Date().toISOString()
-  const dbPath = join(homedir(), '.local/share/opencode/opencode.db')
+  const dbPath = join(home, '.local/share/opencode/opencode.db').replace(/\\/g, '/')
   const script = `
 import sqlite3, json
 conn = sqlite3.connect('file:${dbPath}?mode=ro', uri=True)
