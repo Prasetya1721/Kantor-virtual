@@ -56,7 +56,8 @@ conn.close()
 `.trim()
 
   try {
-    const { stdout } = await execFile('python3', ['-c', script], { timeout: 5_000, maxBuffer: 1024 * 1024 })
+    const pythonBin = process.platform === 'win32' ? 'python' : 'python3'
+    const { stdout } = await execFile(pythonBin, ['-c', script], { timeout: 5_000, maxBuffer: 1024 * 1024 })
     const raw = JSON.parse(stdout) as { id: string; directory: string; title: string; model?: string; created: number; updated: number; tokens_input: number; tokens_output: number }[]
     const sessions: OpenCodeSession[] = raw.map((item) => {
       let model: string | undefined
