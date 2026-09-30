@@ -6,10 +6,7 @@ import { LoadingState, SourceStatus } from '../ui.tsx'
 
 /** Workspace and Lounge are the only rooms: an observed state maps an agent into one of them. */
 const ROOMS: OfficeRoom[] = ['Workspace', 'Lounge']
-const ROOM_SUBTITLE: Record<OfficeRoom, string> = {
-  Workspace: 'DESKS + COLLABORATION',
-  Lounge: 'QUIET BREAK AREA',
-}
+const ROOM_SUBTITLE: Record<OfficeRoom, string> = { Workspace: 'DESKS + COLLABORATION', Lounge: 'QUIET BREAK AREA' }
 
 export function PixelCharacter({ avatar }: { avatar: string }) {
   return <span className={`pixel-character ${avatar}`} aria-hidden="true"><span className="character-hair"/><span className="character-head"><i/><b/></span><span className="character-torso"/><span className="character-arm left"/><span className="character-arm right"/><span className="character-leg left"/><span className="character-leg right"/></span>
@@ -75,7 +72,7 @@ export function Office() {
     <SourceStatus source={office ? { availability: 'available', data: null } : undefined} fetchedAt={office?.fetchedAt} request={snapshot}/>
     <section className="office-dashboard" aria-label="Visual Office">
       <div className="office-main"><div className="room-tabs" role="tablist" aria-label="Office rooms">{ROOMS.map((item) => <button role="tab" aria-selected={room === item} className={room === item ? 'active' : ''} onClick={() => setChosenRoom(item)} key={item}>{item} <span className="room-count">{counts[item]}</span></button>)}</div>
-        <div className="room-scroll"><section className={`pixel-room ${room.toLowerCase()}`} aria-label={`${room} room`}><div className="room-label"><span>{room}</span><small>{room === 'Workspace' ? 'DESKS + COLLABORATION' : 'QUIET BREAK AREA'}</small></div><div className="pixel-window window-one" aria-hidden="true"/><div className="pixel-window window-two" aria-hidden="true"/><div className="pixel-door" aria-hidden="true"/>
+        <div className="room-scroll"><section className={`pixel-room ${room.toLowerCase()}`} aria-label={`${room} room`}><div className="room-label"><span>{room}</span><small>{ROOM_SUBTITLE[room]}</small></div><div className="pixel-window window-one" aria-hidden="true"/><div className="pixel-window window-two" aria-hidden="true"/><div className="pixel-door" aria-hidden="true"/>
           {room === 'Workspace' ? <><div className="pixel-shelf" aria-hidden="true"/><div className="pixel-plant plant-one" aria-hidden="true"/><div className="meeting-table" aria-hidden="true"><span>MEET</span></div>
             {desks.map((desk) => <div className={`ws-desk desk-${desk.seat}${desk.occupied ? ' occupied' : ''}`} key={desk.seat} aria-hidden="true"><i/><span className="desk-plate">{desk.workstation}</span></div>)}</>
             : <><div className="lounge-sofa" aria-hidden="true"/><div className="lounge-chair chair-one" aria-hidden="true"/><div className="lounge-chair chair-two" aria-hidden="true"/><div className="coffee-table" aria-hidden="true"/><div className="pixel-tv" aria-hidden="true"/><div className="pixel-plant plant-two" aria-hidden="true"/></>}
