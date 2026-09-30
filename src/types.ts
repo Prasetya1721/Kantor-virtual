@@ -79,6 +79,33 @@ export interface DashboardSnapshot {
   commands: CommandHealth
   fetchedAt: string
 }
+export interface DailyWindow { start: string; end: string; label: string }
+/** One calendar day, sliced from attributable session activity. No value is estimated. */
+export interface DailyReportDay {
+  sessions: { id: string; title: string; workspace?: string; lastActive: string; lastActiveAt?: string }[]
+  /** Sessions Hermes listed whose age could not be derived from `Last Active`. Never counted. */
+  undated: number
+  tools: { tool: string; calls: number }[]
+  toolCalls: number
+  chatReplies: number
+  errors: number
+}
+export interface DailyReport {
+  window: DailyWindow
+  profile: string
+  day: DailyReportDay
+  /** OpenCode build sessions are read separately; none of them are attributed to a Hermes profile. */
+  build: {
+    availability: Availability
+    totalSessions: number
+    sessions: { id: string; title: string; directory: string; created: string; tokens: number }[]
+    tokens: number
+    error?: { code: string; message: string }
+  }
+  /** False when a source could not be read, so the UI can say so instead of implying a zero. */
+  complete: boolean
+  fetchedAt: string
+}
 export interface CommandLogEntry { command: string; ok: boolean; durationMs: number; at: string; error?: string }
 export interface CommandLogSnapshot { entries: CommandLogEntry[]; health: CommandHealth; fetchedAt: string }
 export type LogLevel = 'ERROR' | 'WARNING' | 'INFO' | 'DEBUG' | 'OTHER'
