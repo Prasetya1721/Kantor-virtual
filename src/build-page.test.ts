@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { collectOpenCodeBuild } from '../server/opencode-build.js'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { execFileSync } from 'node:child_process'
@@ -52,18 +52,14 @@ print(json.dumps([dict(r) for r in conn.execute('SELECT * FROM session LIMIT 1')
     // A database without a session table is also just "unavailable".
     const dir = mkdtempSync(join(tmpdir(), 'mc-opencode-'))
     try {
-      const db = join(dir, 'opencode.db')
+      const dbDir = join(dir, '.local', 'share', 'opencode')
+      mkdirSync(dbDir, { recursive: true })
+      const db = join(dbDir, 'opencode.db')
       const pythonBin = process.platform === 'win32' ? 'python' : 'python3'
       execFileSync(pythonBin, ['-c', `import sqlite3; c = sqlite3.connect('${db.replace(/\\/g, '\\\\')}'); c.execute('CREATE TABLE other (x)'); c.commit()`])
-      const original = process.env.HOME
-      process.env.HOME = dir
-      try {
-        const snapshot = await collectOpenCodeBuild()
-        expect(snapshot.availability).toBe('unavailable')
-        expect(snapshot.sessions).toEqual([])
-      } finally {
-        if (original === undefined) delete process.env.HOME; else process.env.HOME = original
-      }
+      const snapshot = await collectOpenCodeBuild(Date.now(), dir)
+      expect(snapshot.availability).toBe('unavailable')
+      expect(snapshot.sessions).toEqual([])
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
