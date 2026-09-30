@@ -4,7 +4,10 @@ import { promisify } from 'node:util'
 const execFile = promisify(execFileCallback)
 const CACHE_MS = 10_000
 const INSIGHTS_CACHE_MS = 60_000
-const COMMAND_TIMEOUT_MS = 8_000
+// The Dashboard reads eight sources at once, so every `hermes` CLI call competes for the same
+// process budget. Individually each command finishes in 2-5s, but under that concurrency they
+// regularly crossed the old 8s ceiling and reported TIMEOUT for sources that are actually healthy.
+const COMMAND_TIMEOUT_MS = 25_000
 const COMMAND_LOG_LIMIT = 100
 const LOG_TAIL_LINES = 200
 
