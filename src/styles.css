@@ -779,3 +779,25 @@ aside.office-panel { background: color-mix(in srgb, var(--surface) 96%, transpar
 .board-nav-chips .chip b { font-weight: 600; margin-left: 4px; }
 .office-overlay .board > .column { max-height: max(240px, calc(100dvh - 470px)); }
 .board-nav-chips .tone-border-good { border-left-color: var(--c-4fb986); } .board-nav-chips .tone-border-info { border-left-color: var(--c-5b9bd5); } .board-nav-chips .tone-border-bad { border-left-color: var(--c-d9695a); } .board-nav-chips .tone-border-muted { border-left-color: var(--c-5c655d); } .board-nav-chips .tone-border-unknown { border-left-color: var(--c-d59a4f); }
+
+/* Profile lock: PIN entry, unlock prompt and the agent picker */
+.settings-card + .settings-card { margin-top: 18px; }
+.pin-field { display: grid; gap: 6px; justify-items: start; position: relative; }
+.pin-input { background: transparent; border: 0; caret-color: transparent; color: transparent; font-size: 1px; height: 40px; left: 0; opacity: 0.01; position: absolute; top: 18px; width: 230px; }
+.pin-dots { display: flex; gap: 10px; padding: 10px 2px; }
+.pin-dots i { border: 2px solid var(--text-muted); border-radius: 50%; height: 16px; width: 16px; }
+.pin-dots i.filled { background: var(--accent); border-color: var(--accent); }
+.pin-field:focus-within .pin-dots { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 8px; }
+.profile-unlock { align-items: center; border: 1px dashed var(--border-strong); border-radius: 10px; display: grid; gap: 10px; justify-items: center; margin: 12px auto; max-width: 420px; padding: 24px; text-align: center; }
+.profile-unlock.compact { padding: 18px; }
+.profile-unlock h3 { font-size: 18px; margin: 0; }
+.profile-unlock .muted { margin: 0; }
+.profile-unlock .pin-field { justify-items: center; }
+.profile-unlock .primary-button { justify-self: center; }
+.profile-unlock-icon { font-size: 30px; margin: 0; }
+.relock-bar { align-items: center; background: var(--surface-2, var(--surface)); border: 1px solid var(--border); border-radius: 6px; display: flex; flex-wrap: wrap; font-size: 13px; gap: 10px; justify-content: space-between; margin: 8px 0 12px; padding: 8px 12px; }
+.lock-agents { border: 0; display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; }
+.lock-agents legend { margin-bottom: 6px; padding: 0; }
+.lock-agent { border: 1px solid var(--c-3a463c); border-radius: 4px; cursor: pointer; font-size: 13px; padding: 6px 10px; }
+.lock-agent.active { border-color: var(--accent); color: var(--text); }
+.lock-agent input { accent-color: var(--accent); }

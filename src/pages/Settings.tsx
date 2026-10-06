@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { accessRequest, downloadCode, generateCode, type AccessStatus } from '../access.ts'
 import { formatDateTime } from '../format.ts'
 import { PageTitle } from '../ui.tsx'
+import { ProfileLockSettings } from './ProfileLockSettings.tsx'
 
 type Mode = 'idle' | 'set' | 'off'
 
@@ -112,5 +113,6 @@ export function Settings({ access, onAccessChange }: { access: AccessStatus | un
         <p className="small-note">Lost the code? On the machine that runs Ruang, run <code>ruang access-code off</code> (or <code>ruang access-code new</code> for a new random code).</p>
       </>}
     </section>
+    <ProfileLockSettings/>
   </>
 }

@@ -55,6 +55,8 @@ export interface AgentMemory {
   user?: MemoryStore
   contextFiles: MemoryDocument[]
   settings?: MemorySettings
+  /** Withheld by the profile lock. */
+  locked?: boolean
 }
 export interface MemorySnapshot { agents: AgentMemory[]; fetchedAt: string }
 

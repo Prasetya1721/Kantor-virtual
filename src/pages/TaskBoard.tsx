@@ -4,6 +4,8 @@ import { usePolling } from '../polling.ts'
 import { loadSnapshot, type RequestState } from '../request-state.ts'
 import type { Task, TaskBoardSnapshot, TaskDetailSnapshot } from '../types.ts'
 import { Dialog, EmptyState, PageTitle, SearchInput, SourceStatus, Unavailable } from '../ui.tsx'
+import { ProfileUnlock, RelockBar } from '../ProfileLock.tsx'
+import { agentPrivacy, useProfileLock } from '../profile-lock.ts'
 
 const UNASSIGNED = '(unassigned)'
 
@@ -13,13 +15,17 @@ function Field({ label, value }: { label: string; value?: string | number }) {
 
 export function TaskDetailDialog({ task, onClose, onOpenTask }: { task: Task; onClose: () => void; onOpenTask?: (id: string) => void }) {
   const [state, setState] = useState<RequestState<TaskDetailSnapshot>>({ status: 'pending' })
+  const lock = useProfileLock()
+  // A locked agent's task stays private until its PIN is entered; the server refuses it too.
+  const privacy = agentPrivacy(lock, task.assignee)
+  const locked = privacy === 'locked' || (task.private === true && !lock)
   useEffect(() => {
-    if (!task.id) return
+    if (!task.id || locked) return
     let active = true
     setState({ status: 'pending' })
     void loadSnapshot<TaskDetailSnapshot>(`/api/tasks/${encodeURIComponent(task.id)}${task.board ? `?board=${encodeURIComponent(task.board)}` : ''}`).then((next) => { if (active) setState(next) })
     return () => { active = false }
-  }, [task.id, task.board])
+  }, [task.id, task.board, locked])
   const detail = state.status === 'ready' && state.data.task.availability === 'available' ? state.data.task.data : null
   const failed = !task.id || state.status === 'failed' || (state.status === 'ready' && !detail)
   const status = detail?.status ?? task.status
@@ -28,6 +34,8 @@ export function TaskDetailDialog({ task, onClose, onOpenTask }: { task: Task; on
     <p className="eyebrow">KANBAN TASK{task.board ? ` · ${task.board.toUpperCase()} BOARD` : ''}{task.id ? ` · ${task.id}` : ''}</p>
     <h2 id="task-detail-title">{detail?.title ?? task.title}</h2>
     <div className="task-meta"><span className={`badge ${statusTone(status)}`}>{status}</span><span className={`chip ${task.assignee ? '' : 'chip-muted'}`}>{detail?.assignee ?? task.assignee ?? 'unassigned'}</span>{(detail?.priority ?? task.priority) ? <span className="chip chip-priority">P{detail?.priority ?? task.priority}</span> : null}</div>
+    {locked && task.assignee ? <ProfileUnlock agent={task.assignee} minutes={lock?.unlockMinutes} compact/> : <>
+    {privacy === 'unlocked' && task.assignee && <RelockBar agent={task.assignee} minutes={lock?.unlockMinutes ?? 15}/>}
     {state.status === 'pending' && task.id && <p className="muted">Loading task details…</p>}
     {failed && <p className="file-notice">{task.id ? 'Full details are not available right now (hermes kanban show could not be read). Showing the board summary.' : 'This task has no id, so only the board summary is available.'}</p>}
     {detail && <>
@@ -49,6 +57,7 @@ export function TaskDetailDialog({ task, onClose, onOpenTask }: { task: Task; on
       {detail.runs.length > 0 && <section className="task-section"><p className="eyebrow">RUNS ({detail.runs.length})</p><table className="log-table"><thead><tr><th>Run</th><th>Profile</th><th>Status</th><th>Started</th><th>Ended</th></tr></thead><tbody>{detail.runs.map((run) => <tr key={run.id}><td>#{run.id}</td><td>{run.profile ?? '—'}</td><td><span className={`badge ${statusTone(run.outcome ?? run.status ?? '')}`}>{run.outcome ?? run.status ?? '—'}</span>{run.error && <div className="text-bad small-note">{run.error}</div>}{run.summary && <div className="small-note">{run.summary}</div>}</td><td>{formatDateTime(run.startedAt)}</td><td>{formatDateTime(run.endedAt)}</td></tr>)}</tbody></table></section>}
       {detail.comments.length > 0 && <section className="task-section"><p className="eyebrow">COMMENTS ({detail.comments.length})</p><ul className="task-timeline">{detail.comments.map((comment, index) => <li key={index}><b>{comment.author}</b><small>{formatDateTime(comment.createdAt)}</small><p>{comment.body}</p></li>)}</ul></section>}
       {detail.events.length > 0 && <section className="task-section"><p className="eyebrow">ACTIVITY ({detail.events.length})</p><ul className="task-timeline">{[...detail.events].reverse().map((event, index) => <li key={index}><b>{event.kind}</b><small>{formatDateTime(event.createdAt)}{event.runId ? ` · run #${event.runId}` : ''}</small>{event.detail && <code>{event.detail}</code>}</li>)}</ul></section>}
+    </>}
     </>}
   </Dialog>
 }

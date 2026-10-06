@@ -86,7 +86,7 @@ Checks: `npm run lint`, `npm test`, `npm run build`.
   OpenCode shows its global `AGENTS.md`/`CLAUDE.md`. Entries are searchable. Everything is read through the Folders safety layer, so it is read-only, confined to the agent's folder and secret-redacted. `#/knowledge` opens this page.
 - **Folders**: one folder per agent, and only that agent's folder: a Hermes profile `<name>` → `~/.hermes/profiles/<name>`, OpenCode → `~/.opencode`. Browse sub-folders and view files read-only. See *Folders* below.
 - **Logs**: tails of `hermes logs agent|gateway|errors` with level filter, search and follow mode, plus an audit of every command the server ran (the *Command audit* tab).
-- **Settings**: the optional access code. See *Access code* below.
+- **Settings**: the optional access code and profile lock. See *Access code* and *Profile lock* below.
 
 **Token usage** (the **Usage** page in the menu, the **◔ Tokens** button in the Office, and the Panel's Stats tab) adds up `hermes insights` of every agent, because Hermes keeps sessions per profile. Pick 24 hours, 7 days or 30 days to see:
 - total tokens, input/output, estimated cost, sessions, messages and tool calls for the whole crew, plus the top consumer
@@ -126,6 +126,27 @@ How it is protected:
 
 Ruang listens on `127.0.0.1`, so the code matters when you reach it from other devices, for example through an SSH tunnel, Tailscale or a reverse proxy. Over plain HTTP the code crosses the network unencrypted; use an HTTPS tunnel or Tailscale for that.
 
+## Profile lock
+
+Off by default. In **Settings → Profile lock**, pick the agents to lock and set one 6-digit PIN, like app lock on a phone. A locked agent still works and still appears in the office (with 🔒 by its name, and its state such as Working or Idle), but its private data stays hidden until the PIN opens that agent in this browser for 15 minutes:
+
+| Data | While locked |
+|---|---|
+| Folder and file contents, memory (SOUL.md, MEMORY.md, USER.md, context files) | refused (HTTP 423); the Folder and Memory tabs ask for the PIN |
+| Kanban tasks assigned to it | the card stays, titled *🔒 Private task*; its details ask for the PIN |
+| Its cron jobs | the schedule stays, named *🔒 Private job* |
+| Live activity and current task in the office | generic (*🔒 Working*, *On a break*) |
+| Sessions, logs and the latest session (these come from the `default` profile) | hidden when `default` is locked |
+| Token usage | totals stay; its biggest session is hidden |
+
+Unlocking one agent does not unlock the others, and **🔒 Lock again** closes it early. Changing the locked agents, the PIN or turning the lock off needs the current PIN; a new PIN locks every agent again. The server enforces all of this per request, not just the page.
+
+- Only a scrypt hash of the PIN is stored, in `~/.config/ruang/profile-lock.json` (mode `0600`), next to the access code.
+- Unlocks are signed, per agent, in an `HttpOnly`, `SameSite=Strict` cookie that expires after 15 minutes.
+- After 5 wrong PINs each try waits longer (1 s, doubling, up to 5 minutes); after 10 wrong PINs, an hour.
+- A damaged lock file keeps every agent locked. Lost the PIN? On the machine: `ruang profile-lock off` (and `ruang profile-lock status`).
+- The lock covers what Ruang shows. Anyone with a shell on the machine can still read `~/.hermes` directly, and Hermes itself is unchanged.
+
 ## Data and safety
 
 The server uses only these fixed, read-only commands:
@@ -159,7 +180,7 @@ Otherwise, raw CLI output, process details, paths, configuration, credentials, a
 - Activity is limited to session-list metadata and does not synthesize events.
 - Knowledge is a curated catalog of enabled skills recognized from Hermes's Rich table.
 
-Empty source results remain available and show truthful empty states; unparseable output and command failures are shown as `Not Available`. Hermes write actions are intentionally not implemented. The only thing Ruang ever writes is its own optional access code file (see *Access code*).
+Empty source results remain available and show truthful empty states; unparseable output and command failures are shown as `Not Available`. Hermes write actions are intentionally not implemented. The only things Ruang ever writes are its own optional access code and profile lock files (see *Access code* and *Profile lock*).
 
 ## Office
 

@@ -4,6 +4,7 @@ import { usePolling } from '../polling.ts'
 import type { AgentMemory, MemoryDocument, MemorySnapshot, MemoryStore } from '../types.ts'
 import { EmptyState, LoadingState, PageTitle, SearchInput, SourceStatus, Unavailable } from '../ui.tsx'
 import { PixelCharacter } from './Office.tsx'
+import { PrivateGate, ProfileUnlock } from '../ProfileLock.tsx'
 
 function DocumentBody({ document, empty }: { document?: MemoryDocument; empty: string }) {
   if (!document || !document.exists) return <p className="muted">{empty}</p>
@@ -78,7 +79,7 @@ export function AgentMemoryView({ profile }: { profile: string }) {
   if (snapshot.status === 'pending') return <LoadingState message="Reading agent memory..."/>
   if (snapshot.status === 'failed') return <EmptyState title="Not Available">{snapshot.message ?? 'Memory could not be read.'}</EmptyState>
   if (!agent) return <EmptyState title="Not available">No memory was found for this agent.</EmptyState>
-  return <AgentPanel key={agent.profile} agent={agent}/>
+  return <PrivateGate agent={agent.profile} compact>{agent.locked ? <ProfileUnlock agent={agent.profile} compact/> : <AgentPanel key={agent.profile} agent={agent}/>}</PrivateGate>
 }
 
 export function Memory({ onOpenFolders }: { onOpenFolders?: () => void }) {
@@ -94,12 +95,12 @@ export function Memory({ onOpenFolders }: { onOpenFolders?: () => void }) {
     {snapshot.status === 'pending' ? <LoadingState message="Reading agent memory..."/> : agent && <>
       <div className="memory-tabs" role="tablist" aria-label="Agents">{agents.map((item) => {
         const peak = Math.max(item.memory?.percent ?? 0, item.user?.percent ?? 0)
-        return <button key={item.profile} role="tab" aria-selected={item.profile === agent.profile} className={`memory-tab${item.profile === agent.profile ? ' active' : ''}`} onClick={() => setSelected(item.profile)} disabled={!item.available}>
+        return <button key={item.profile} role="tab" aria-selected={item.profile === agent.profile} className={`memory-tab${item.profile === agent.profile ? ' active' : ''}`} onClick={() => setSelected(item.profile)} disabled={!item.available && !item.locked}>
           <span className="folder-glyph small" aria-hidden="true"><PixelCharacter agent={item.profile}/></span>
-          <span><strong>{item.label}</strong><small>{!item.available ? item.reason ?? 'not available' : item.kind === 'opencode' ? `${item.contextFiles.length} rules file(s)` : `${(item.memory?.entries.length ?? 0) + (item.user?.entries.length ?? 0)} entries · ${peak}% peak`}</small></span>
+          <span><strong>{item.locked ? '🔒 ' : ''}{item.label}</strong><small>{!item.available ? item.reason ?? 'not available' : item.kind === 'opencode' ? `${item.contextFiles.length} rules file(s)` : `${(item.memory?.entries.length ?? 0) + (item.user?.entries.length ?? 0)} entries · ${peak}% peak`}</small></span>
         </button>
       })}</div>
-      <AgentPanel key={agent.profile} agent={agent} onOpenFolders={onOpenFolders}/>
+      <PrivateGate agent={agent.profile}>{agent.locked ? <ProfileUnlock agent={agent.profile}/> : <AgentPanel key={agent.profile} agent={agent} onOpenFolders={onOpenFolders}/>}</PrivateGate>
     </>}
   </>
 }

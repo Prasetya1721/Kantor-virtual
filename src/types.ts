@@ -7,10 +7,10 @@ export interface RuntimeSnapshot {
   openCode: Source<string>
   fetchedAt: string
 }
-export interface Task { title: string; status: string; id?: string; assignee?: string; priority?: number; board?: string }
+export interface Task { title: string; status: string; id?: string; assignee?: string; priority?: number; board?: string; private?: boolean }
 export interface KanbanBoard { slug: string; name: string; current: boolean; total: number }
 /** `agent` is the Hermes profile the job belongs to (cron jobs are stored per profile). */
-export interface ScheduledJob { name: string; schedule: string; id?: string; nextRun?: string; overdue?: boolean; status?: string; repeat?: string; lastRun?: string; lastRunOk?: boolean; agent?: string }
+export interface ScheduledJob { private?: boolean; name: string; schedule: string; id?: string; nextRun?: string; overdue?: boolean; status?: string; repeat?: string; lastRun?: string; lastRunOk?: boolean; agent?: string }
 export interface Session { title: string; preview: string; lastActive: string; id?: string; workspace?: string; source?: string; actor?: string; active?: boolean }
 export interface Skill { name: string; category: string; source: string; trust: string; status: 'enabled' }
 export interface TaskBoardSnapshot { tasks: Source<Task[]>; boards?: KanbanBoard[]; failedBoards?: string[]; fetchedAt: string }
@@ -25,6 +25,8 @@ export type OfficeRoom = 'Workspace' | 'Lounge'
 export interface OfficeStation {
   /** Agent id: the Hermes profile name, or `opencode`. Also the key for its folder and memory. */
   id: string
+  /** Profile lock: `locked` withholds its private data in this browser, `unlocked` is opened with the PIN. */
+  privacy?: 'locked' | 'unlocked'
   name: string
   role: string
   room: OfficeRoom
@@ -116,5 +118,5 @@ export interface TaskDetailSnapshot { task: Source<TaskDetail | null>; fetchedAt
 export interface MemoryDocument { name: string; path: string; exists: boolean; size?: number; modified?: string; chars?: number; content?: string; truncated?: boolean; redactions?: number; error?: string }
 export interface MemoryStore extends MemoryDocument { entries: string[]; limit: number; used: number; percent: number }
 export interface MemorySettings { memoryEnabled: boolean; userProfileEnabled: boolean; writeApproval: boolean; provider?: string; memoryLimit: number; userLimit: number; source: 'config.yaml' | 'defaults' }
-export interface AgentMemory { profile: string; label: string; path: string; kind: 'hermes' | 'opencode'; available: boolean; reason?: string; soul?: MemoryDocument; memory?: MemoryStore; user?: MemoryStore; contextFiles: MemoryDocument[]; settings?: MemorySettings }
+export interface AgentMemory { profile: string; label: string; path: string; kind: 'hermes' | 'opencode'; available: boolean; reason?: string; soul?: MemoryDocument; memory?: MemoryStore; user?: MemoryStore; contextFiles: MemoryDocument[]; settings?: MemorySettings; locked?: boolean }
 export interface MemorySnapshot { agents: AgentMemory[]; fetchedAt: string }

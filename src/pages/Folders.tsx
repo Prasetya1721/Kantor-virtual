@@ -6,6 +6,8 @@ import type { RequestState } from '../request-state.ts'
 import type { FolderAgent, FolderAgentsSnapshot, FolderFile, FolderListing } from '../types.ts'
 import { EmptyState, LoadingState, PageTitle, SearchInput, SourceStatus, Unavailable } from '../ui.tsx'
 import { PixelCharacter } from './Office.tsx'
+import { PrivateGate } from '../ProfileLock.tsx'
+import { agentPrivacy, useProfileLock } from '../profile-lock.ts'
 
 function folderUrl(agent: string, kind: 'list' | 'file', path: string): string {
   return `/api/folders/${encodeURIComponent(agent)}/${kind}?path=${encodeURIComponent(path)}`
@@ -101,21 +103,22 @@ export function AgentFolder({ profile }: { profile: string }) {
   if (snapshot.status === 'pending') return <LoadingState message="Finding the agent folder..."/>
   if (snapshot.status === 'failed') return <EmptyState title="Not Available">{snapshot.message ?? 'The folder list could not be read.'}</EmptyState>
   if (!agent || !agent.available) return <EmptyState title="Folder not available">{agent?.reason ?? 'This agent has no readable folder.'}</EmptyState>
-  return <div className="embedded-folder">{agent.warning && <p className="file-notice">⚠ {agent.warning}</p>}<Browser key={agent.profile} agent={agent}/></div>
+  return <div className="embedded-folder"><PrivateGate agent={agent.profile} compact>{agent.warning && <p className="file-notice">⚠ {agent.warning}</p>}<Browser key={agent.profile} agent={agent}/></PrivateGate></div>
 }
 
 export function Folders() {
   const snapshot = usePolling<FolderAgentsSnapshot>('/api/folders', 60_000)
   const [openAgent, setOpenAgent] = useState<string | undefined>()
+  const lock = useProfileLock()
   const data = snapshot.status === 'ready' ? snapshot.data : undefined
   const agent = data?.agents.find((item) => item.profile === openAgent)
   const source = data ? { availability: 'available' as const, data: null } : undefined
   return <><PageTitle eyebrow="AGENT FOLDERS" title="Folders">Each agent's own folder, read-only: its Hermes profile folder (SOUL.md, memories, skills, cron, config…) or, for OpenCode, its home folder. Every agent only shows its own files. Credential files are listed but never opened.</PageTitle>
     {!agent && <SourceStatus source={source} fetchedAt={data?.fetchedAt} request={snapshot}/>}
     <Unavailable source={source} request={snapshot}/>
-    {snapshot.status === 'pending' ? <LoadingState message="Finding agent folders..."/> : agent ? <Browser key={agent.profile} agent={agent} onBack={() => setOpenAgent(undefined)}/> : data && <section className="folder-agents">{data.agents.map((item) => <button type="button" key={item.profile} className="folder-agent" disabled={!item.available} onClick={() => setOpenAgent(item.profile)}>
+    {snapshot.status === 'pending' ? <LoadingState message="Finding agent folders..."/> : agent ? <><PrivateGate agent={agent.profile}><Browser key={agent.profile} agent={agent} onBack={() => setOpenAgent(undefined)}/></PrivateGate>{agentPrivacy(lock, agent.profile) === 'locked' && <button type="button" className="refresh-button" onClick={() => setOpenAgent(undefined)}>← ALL AGENTS</button>}</> : data && <section className="folder-agents">{data.agents.map((item) => <button type="button" key={item.profile} className="folder-agent" disabled={!item.available} onClick={() => setOpenAgent(item.profile)}>
       <span className="folder-glyph" aria-hidden="true"><PixelCharacter agent={item.profile}/></span>
-      <span className="folder-meta"><strong>{item.label}</strong><code className="folder-path">{item.path}</code><small>{item.available ? 'Open folder →' : item.reason ?? 'Folder not available'}</small>{item.warning && <small className="text-bad">⚠ {item.warning}</small>}</span>
+      <span className="folder-meta"><strong>{agentPrivacy(lock, item.profile) === 'locked' && '🔒 '}{item.label}</strong><code className="folder-path">{item.path}</code><small>{item.available ? 'Open folder →' : item.reason ?? 'Folder not available'}</small>{item.warning && <small className="text-bad">⚠ {item.warning}</small>}</span>
     </button>)}</section>}
   </>
 }

@@ -21,7 +21,7 @@ export function Agents({ runtime, pending = false }: { runtime: RuntimeSnapshot 
       return <article className="agent-card" key={card.id}>
         <span className="folder-glyph" aria-hidden="true"><PixelCharacter agent={card.id}/></span>
         <div className="agent-card-body">
-          <h2>{agentLabel(card.id)}</h2>
+          <h2>{station?.privacy === 'locked' ? '🔒 ' : ''}{agentLabel(card.id)}</h2>
           <p className="muted">{card.kind}</p>
           <dl>
             <div><dt>Model</dt><dd>{card.model}</dd></div>

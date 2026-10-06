@@ -48,7 +48,7 @@ export function normalizeCode(code: unknown): string {
   return trimmed
 }
 
-function derive(code: string, salt: Buffer): Promise<Buffer> {
+export function derive(code: string, salt: Buffer): Promise<Buffer> {
   return new Promise((resolve, reject) => scrypt(code, salt, 32, { N: 16384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 }, (error, key) => (error ? reject(error) : resolve(key))))
 }
 
@@ -127,19 +127,27 @@ export function tokenValid(file: AccessFile, token: string | undefined, now = Da
   return expected.length === actual.length && timingSafeEqual(expected, actual)
 }
 
-/** Growing waits after repeated wrong codes, per client address. */
+export interface ThrottleOptions { free?: number; maxWaitMs?: number; hardLimit?: number; hardWaitMs?: number }
+
+/**
+ * Growing waits after repeated wrong codes, per client address: after `free` misses each try
+ * waits 1 s, doubling up to `maxWaitMs`; from `hardLimit` misses on, `hardWaitMs` each.
+ */
 export class Throttle {
   private entries = new Map<string, { failures: number; until: number }>()
+  constructor(private readonly options: ThrottleOptions = {}) {}
   waitMs(key: string, now = Date.now()): number { return Math.max(0, (this.entries.get(key)?.until ?? 0) - now) }
   fail(key: string, now = Date.now()): void {
     if (this.entries.size > 5_000) this.entries.clear()
+    const { free = FREE_ATTEMPTS, maxWaitMs = MAX_WAIT_MS, hardLimit, hardWaitMs = 0 } = this.options
     const failures = (this.entries.get(key)?.failures ?? 0) + 1
-    this.entries.set(key, { failures, until: failures >= FREE_ATTEMPTS ? now + Math.min(MAX_WAIT_MS, 1000 * 2 ** (failures - FREE_ATTEMPTS)) : 0 })
+    const wait = hardLimit !== undefined && failures >= hardLimit ? hardWaitMs : failures >= free ? Math.min(maxWaitMs, 1000 * 2 ** (failures - free)) : 0
+    this.entries.set(key, { failures, until: wait > 0 ? now + wait : 0 })
   }
   succeed(key: string): void { this.entries.delete(key) }
 }
 
-function cookieValue(request: Request, name: string): string | undefined {
+export function cookieValue(request: Request, name: string): string | undefined {
   for (const part of (request.headers.cookie ?? '').split(';')) {
     const [key, ...rest] = part.trim().split('=')
     if (key === name) return rest.join('=')

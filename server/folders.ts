@@ -36,7 +36,7 @@ export interface FolderFile {
 }
 
 export class FolderError extends Error {
-  constructor(message: string, readonly status: 400 | 403 | 404 | 500) { super(message) }
+  constructor(message: string, readonly status: 400 | 403 | 404 | 423 | 500) { super(message) }
 }
 
 /** Mirrors hermes_constants.get_default_hermes_root(). RUANG_HERMES_ROOT (or the older MISSION_CONTROL_HERMES_ROOT) overrides it. */

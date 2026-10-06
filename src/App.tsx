@@ -11,6 +11,7 @@ import { Settings } from './pages/Settings.tsx'
 import { Usage } from './pages/Usage.tsx'
 import { TaskBoard } from './pages/TaskBoard.tsx'
 import { LOCKED_EVENT, loadAccess, type AccessStatus } from './access.ts'
+import { PROFILES_CHANGED } from './profile-lock.ts'
 import { LockScreen } from './LockScreen.tsx'
 import { API_VERSION } from './api-version.ts'
 import { RefreshContext, usePolling } from './polling.ts'
@@ -101,7 +102,10 @@ export function App() {
     const check = () => void loadAccess().then((status) => { if (active) { setAccess(status); setChecked(true) } })
     check()
     window.addEventListener(LOCKED_EVENT, check)
-    return () => { active = false; window.removeEventListener(LOCKED_EVENT, check) }
+    // Unlocking or locking an agent changes what every source may show: refresh them all.
+    const refresh = () => setTick((value) => value + 1)
+    window.addEventListener(PROFILES_CHANGED, refresh)
+    return () => { active = false; window.removeEventListener(LOCKED_EVENT, check); window.removeEventListener(PROFILES_CHANGED, refresh) }
   }, [])
   if (!checked) return <main className="lock-screen" aria-busy="true"/>
   if (access?.enabled && !access.unlocked) return <LockScreen status={access} onUnlocked={(status) => { setAccess(status); setTick((value) => value + 1) }}/>

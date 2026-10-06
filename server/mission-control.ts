@@ -16,17 +16,17 @@ export interface Profile { name: string; model: string; gateway: GatewayState }
 export interface Source<T> {
   availability: Availability
   data: T
-  error?: { code: 'COMMAND_FAILED' | 'TIMEOUT'; message: string }
+  error?: { code: 'COMMAND_FAILED' | 'TIMEOUT' | 'LOCKED'; message: string }
 }
 export interface RuntimeSnapshot {
   profiles: Source<Profile[]>
   openCode: Source<string>
   fetchedAt: string
 }
-export interface Task { title: string; status: string; id?: string; assignee?: string; priority?: number; board?: string }
+export interface Task { title: string; status: string; id?: string; assignee?: string; priority?: number; board?: string; /** Belongs to a locked agent (profile lock): the title is withheld. */ private?: boolean }
 export interface KanbanBoard { slug: string; name: string; current: boolean; total: number }
 /** `agent` is the Hermes profile the job belongs to (cron jobs are stored per profile). */
-export interface ScheduledJob { name: string; schedule: string; id?: string; nextRun?: string; overdue?: boolean; status?: string; repeat?: string; lastRun?: string; lastRunOk?: boolean; agent?: string }
+export interface ScheduledJob { /** Belongs to a locked agent (profile lock): the name is withheld. */ private?: boolean; name: string; schedule: string; id?: string; nextRun?: string; overdue?: boolean; status?: string; repeat?: string; lastRun?: string; lastRunOk?: boolean; agent?: string }
 export interface Session { title: string; preview: string; lastActive: string; id?: string; workspace?: string; source?: string; actor?: string; active?: boolean }
 export interface Skill { name: string; category: string; source: string; trust: string; status: 'enabled' }
 export interface TaskBoardSnapshot { tasks: Source<Task[]>; boards?: KanbanBoard[]; failedBoards?: string[]; fetchedAt: string }
@@ -41,6 +41,8 @@ export type OfficeRoom = 'Workspace' | 'Lounge'
 export interface OfficeStation {
   /** Agent id: the Hermes profile name, or `opencode`. Also the key for its folder and memory. */
   id: string
+  /** Profile lock: `locked` withholds its private data in this browser, `unlocked` is opened with the PIN. */
+  privacy?: 'locked' | 'unlocked'
   name: string
   role: string
   room: OfficeRoom
