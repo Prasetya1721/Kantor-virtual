@@ -38,6 +38,24 @@ export function statusTone(status: string): 'good' | 'unknown' | 'muted' | 'bad'
   }
 }
 
+/** Indonesian labels for the task statuses used on the Kanban board. */
+export const STATUS_LABELS_ID: Record<string, string> = {
+  triage: 'Penyaringan',
+  todo: 'Rencana',
+  scheduled: 'Terjadwal',
+  ready: 'Siap Kerja',
+  running: 'Sedang Berjalan',
+  blocked: 'Terkendala',
+  review: 'Menunggu Review',
+  done: 'Selesai',
+  archived: 'Diarsipkan',
+}
+
+/** Falls back to the raw status so unknown board columns still render. */
+export function statusLabelId(status: string): string {
+  return STATUS_LABELS_ID[status.toLowerCase()] ?? status
+}
+
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`

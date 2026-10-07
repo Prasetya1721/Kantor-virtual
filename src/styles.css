@@ -337,6 +337,16 @@ aside.office-side { border: 0; flex-direction: initial; padding: 0; }
 .notice { background: var(--c-2a2116); border: 1px solid var(--c-6b5230); color: var(--c-f0dcbc); font-size: 14px; line-height: 1.5; margin-bottom: 18px; padding: 14px 18px; }
 .notice strong { font: 600 14px inherit; color: var(--c-f2b16b); }
 
+/* ---- Approval queue banner: only rendered when tasks await review ---- */
+/* Declarations restored from the pre-rebase dashboard commit; every token is themed in light and dark. */
+.approval-banner { align-items: center; background: var(--c-1d3347); border: 1px solid var(--c-5b9bd5); border-left: 4px solid var(--c-5b9bd5); border-radius: 4px; display: flex; gap: 16px; justify-content: space-between; margin: 0 0 18px; padding: 18px 22px; }
+.approval-banner .eyebrow { color: var(--c-5b9bd5); margin: 0 0 4px; }
+.approval-banner h3 { color: var(--c-a9d4ff); font-size: 16px; font-weight: 500; margin: 0 0 4px; }
+.approval-banner p { color: var(--c-cbd1c9); font-size: 13px; margin: 0; }
+.approval-action-btn { background: var(--c-5b9bd5); border: 0; border-radius: 4px; color: #fff; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600; padding: 10px 18px; transition: filter .15s; white-space: nowrap; }
+.approval-action-btn:hover { filter: brightness(1.15); }
+@media (max-width: 760px) { .approval-banner { align-items: flex-start; flex-direction: column; } }
+
 /* ---- Semantic aliases for new UI (derive from the theme tokens above) ---- */
 :root { --surface: var(--c-151a16); --surface-2: var(--c-1a211c); --surface-3: var(--c-121613); --border: var(--c-313831); --border-strong: var(--c-3a463c); --text: var(--c-eeeae3); --text-muted: var(--c-9ea79e); --text-dim: var(--c-778078); --accent: var(--c-f2b16b); --active-bg: var(--c-20423d); --active-border: var(--c-79d6bd); --active-text: var(--c-d9fff2); --nav-active: var(--c-263129); --code-bg: var(--c-0b0e0c); }
 body { background: var(--c-101311); color: var(--text); }
