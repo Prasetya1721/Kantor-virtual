@@ -849,10 +849,21 @@ export async function collectAgentActivity(profiles: readonly string[], run: Run
 /** One office station per agent: every Hermes profile, plus OpenCode when it is installed. */
 interface AgentSpec { id: string; role: string; profile?: string; gateway?: GatewayState; aliases: string[] }
 
+/**
+ * Extra Kanban assignee names that map onto an existing station. The engineering sub-roles are
+ * declared, not real Hermes profiles, so a task assigned to `frontend` or `qa` would otherwise
+ * never be attributed to anyone. This only widens matching: it never creates a station.
+ */
+export const ROLE_ALIASES: Record<string, string[]> = {
+  leadengineer: ['engineer', 'pm', 'project manager', 'architect'],
+  security: ['auditor'],
+  opencode: ['frontend', 'front-end', 'backend', 'back-end', 'fullstack', 'full-stack', 'ui/ux', 'qa', 'tester'],
+}
+
 export function agentRoster(runtime: RuntimeSnapshot): AgentSpec[] {
   const profiles = runtime.profiles.availability === 'available' ? runtime.profiles.data : []
-  const agents: AgentSpec[] = profiles.filter((profile) => PROFILE_NAME.test(profile.name)).map((profile) => ({ id: profile.name, role: 'Hermes profile', profile: profile.name, gateway: profile.gateway, aliases: [profile.name.toLowerCase()] }))
-  if (runtime.openCode.availability === 'available' && !agents.some((agent) => agent.id === 'opencode')) agents.push({ id: 'opencode', role: 'OpenCode', aliases: ['opencode', 'open-code'] })
+  const agents: AgentSpec[] = profiles.filter((profile) => PROFILE_NAME.test(profile.name)).map((profile) => ({ id: profile.name, role: 'Hermes profile', profile: profile.name, gateway: profile.gateway, aliases: [profile.name.toLowerCase(), ...(ROLE_ALIASES[profile.name.toLowerCase()] ?? [])] }))
+  if (runtime.openCode.availability === 'available' && !agents.some((agent) => agent.id === 'opencode')) agents.push({ id: 'opencode', role: 'OpenCode', aliases: ['opencode', 'open-code', ...ROLE_ALIASES.opencode] })
   return agents
 }
 

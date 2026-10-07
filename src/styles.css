@@ -801,3 +801,22 @@ aside.office-panel { background: color-mix(in srgb, var(--surface) 96%, transpar
 .lock-agent { border: 1px solid var(--c-3a463c); border-radius: 4px; cursor: pointer; font-size: 13px; padding: 6px 10px; }
 .lock-agent.active { border-color: var(--accent); color: var(--text); }
 .lock-agent input { accent-color: var(--accent); }
+
+/* ---- Engineering division sub-roles (declared, on-demand) ---- */
+.engineering-section { border-top: 1px solid var(--border); margin-top: 40px; padding-top: 26px; }
+.engineering-section > h2 { font-size: 25px; letter-spacing: -.04em; margin: 6px 0 0; }
+.engineering-banner { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--c-79d6bd); border-radius: 4px; margin: 18px 0 24px; padding: 14px 18px; }
+.engineering-banner p { color: var(--text); font-size: 13px; line-height: 1.55; margin: 0; }
+.engineering-banner small { color: var(--text-dim); display: block; margin-top: 6px; }
+.role-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.role-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; display: flex; flex-direction: column; gap: 10px; padding: 18px; }
+.role-card header { align-items: flex-start; border-bottom: 1px solid var(--border); display: flex; gap: 10px; justify-content: space-between; padding: 0 0 10px; }
+.role-card h3 { color: var(--text); font: 500 16px 'DM Sans', Inter, system-ui, sans-serif; letter-spacing: -.02em; margin: 4px 0 0; }
+.role-card .eyebrow { margin: 0; }
+.role-badge { border-radius: 3px; flex: none; font: 10px ui-monospace, monospace; padding: 2px 6px; white-space: nowrap; }
+.role-badge.core { background: var(--c-203d2d); border: 1px solid var(--c-4f9c7a); color: var(--c-a9e1be); }
+.role-badge.supporting { background: var(--c-3d2f1c); border: 1px solid var(--c-6b5230); color: var(--c-eab474); }
+.role-list { color: var(--text-muted); font-size: 12px; line-height: 1.55; margin: 0; padding-left: 18px; }
+.role-skills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; padding-top: 8px; }
+.role-tag { background: var(--surface-2); border: 1px solid var(--border); border-radius: 3px; color: var(--accent); font: 10px ui-monospace, monospace; padding: 2px 6px; }
+.role-footer { border-top: 1px dashed var(--border); color: var(--text-dim); font: 11px ui-monospace, monospace; margin-top: 6px; padding-top: 8px; }
