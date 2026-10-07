@@ -8,13 +8,14 @@ export function PageTitle({ eyebrow, title, children }: { eyebrow: string; title
 }
 
 export function RuntimeBadge({ source }: { source?: Source<GatewayState> }) {
-  const state = source?.availability === 'available' ? source.data : 'Not Available'
-  const tone = state === 'Running' ? 'good' : state === 'Stopped' ? 'bad' : state === 'Not Available' ? 'muted' : 'unknown'
-  return <span className={`badge ${tone}`}>{state}</span>
+  const state = source?.availability === 'available' ? source.data : 'Tidak Tersedia'
+  const tone = state === 'Running' ? 'good' : state === 'Stopped' ? 'bad' : state === 'Tidak Tersedia' ? 'muted' : 'unknown'
+  const label = state === 'Running' ? 'Berjalan' : state === 'Stopped' ? 'Berhenti' : state
+  return <span className={`badge ${tone}`}>{label}</span>
 }
 
 export function LoadingState({ message }: { message: string }) {
-  return <section className="empty-state loading-state" aria-busy="true"><h2>Loading</h2><p>{message}</p></section>
+  return <section className="empty-state loading-state" aria-busy="true"><h2>Memuat</h2><p>{message}</p></section>
 }
 
 export function EmptyState({ title, children }: { title: string; children: ReactNode }) {
@@ -23,18 +24,18 @@ export function EmptyState({ title, children }: { title: string; children: React
 
 /** Source freshness plus a manual refresh control shared by every data page. */
 export function SourceStatus({ source, fetchedAt, request }: { source?: Source<unknown>; fetchedAt?: string; request: Polled<unknown> }) {
-  const status = request.status === 'pending' ? 'Connecting' : request.status === 'failed' || !source || source.availability === 'unavailable' ? 'Not Available' : request.status === 'ready' && request.stale ? 'Stale (refresh failed)' : 'Live source'
+  const status = request.status === 'pending' ? 'Menghubungkan' : request.status === 'failed' || !source || source.availability === 'unavailable' ? 'Tidak Tersedia' : request.status === 'ready' && request.stale ? 'Basi (segarkan gagal)' : 'Sumber langsung'
   const live = source?.availability === 'available' && !(request.status === 'ready' && request.stale)
   return <div className="source-status">
     <span className={live ? 'dot' : 'dot muted-dot'}/><span>{status}</span>
-    <span>{fetchedAt ? `REFRESHED ${formatTime(fetchedAt)}` : 'AWAITING REFRESH'}</span>
-    <button type="button" className="refresh-button" onClick={request.refresh} disabled={request.refreshing} aria-label="Refresh this source">{request.refreshing ? 'REFRESHING…' : '↻ REFRESH'}</button>
+    <span>{fetchedAt ? `DISEGARKAN ${formatTime(fetchedAt)}` : 'MENUNGGU SEGARAN'}</span>
+    <button type="button" className="refresh-button" onClick={request.refresh} disabled={request.refreshing} aria-label="Segarkan sumber ini">{request.refreshing ? 'MENYEGARKAN…' : '↻ SEGARKAN'}</button>
   </div>
 }
 
 export function Unavailable({ source, request }: { source?: Source<unknown>; request: Polled<unknown> }) {
-  if (request.status === 'failed') return <section className="empty-state" role="alert"><h2>Not Available</h2><p>{request.message ?? 'This read-only source could not be reached. Is the Ruang API running?'}</p></section>
-  return source?.availability === 'unavailable' ? <section className="empty-state"><h2>Not Available</h2><p>{source.error?.message ?? 'This read-only source could not be read.'}</p></section> : null
+  if (request.status === 'failed') return <section className="empty-state" role="alert"><h2>Tidak Tersedia</h2><p>{request.message ?? 'Sumber read-only ini tidak dapat dijangkau. Apakah API Ruang berjalan?'}</p></section>
+  return source?.availability === 'unavailable' ? <section className="empty-state"><h2>Tidak Tersedia</h2><p>{source.error?.message ?? 'Sumber read-only ini tidak dapat dibaca.'}</p></section> : null
 }
 
 export function SearchInput({ value, onChange, label }: { value: string; onChange: (value: string) => void; label: string }) {
@@ -60,7 +61,7 @@ export function Dialog({ labelledBy, onClose, closeLabel, className = '', childr
   }
   return <div className="office-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
     <section className={`office-detail ${className}`} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={labelledBy} onKeyDown={onKeyDown}>
-      <button className="office-close" ref={closeRef} onClick={onClose} aria-label={closeLabel}>Close</button>
+      <button className="office-close" ref={closeRef} onClick={onClose} aria-label={closeLabel}>Tutup</button>
       {children}
     </section>
   </div>

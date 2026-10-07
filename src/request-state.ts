@@ -7,9 +7,9 @@ export type RequestState<T> =
 
 /** Explains a failed request in terms the operator can act on. */
 export function describeFailure(httpStatus: number | undefined, serverMessage?: string): string {
-  if (httpStatus === undefined) return 'The Ruang API could not be reached. Is the server running (npm start or npm run dev)?'
-  if (httpStatus === 404 && (!serverMessage || serverMessage === 'Not found')) return 'The Ruang server does not know this endpoint, so it is running older code than this page. Stop it and start it again (npm run build, then npm start) to load the latest version.'
-  return serverMessage ? `${serverMessage} (HTTP ${httpStatus})` : `The Ruang API answered HTTP ${httpStatus}.`
+  if (httpStatus === undefined) return 'API Ruang tidak dapat dijangkau. Apakah server berjalan (npm start atau npm run dev)?'
+  if (httpStatus === 404 && (!serverMessage || serverMessage === 'Not found')) return 'Server Ruang tidak mengenali endpoint ini, jadi kodenya lebih lama daripada halaman ini. Hentikan lalu jalankan ulang (npm run build, lalu npm start) untuk memuat versi terbaru.'
+  return serverMessage ? `${serverMessage} (HTTP ${httpStatus})` : `API Ruang menjawab HTTP ${httpStatus}.`
 }
 
 export async function loadSnapshot<T>(path: string, request: typeof fetch = fetch): Promise<RequestState<T>> {
@@ -28,7 +28,7 @@ export async function loadSnapshot<T>(path: string, request: typeof fetch = fetc
   try {
     return { status: 'ready', data: await response.json() as T }
   } catch {
-    return { status: 'failed', httpStatus: response.status, message: 'The Ruang API returned a response that is not JSON. Is another program using port 3001?' }
+    return { status: 'failed', httpStatus: response.status, message: 'API Ruang mengembalikan respons yang bukan JSON. Apakah ada program lain yang memakai port 3001?' }
   }
 }
 

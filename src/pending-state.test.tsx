@@ -10,16 +10,16 @@ describe('pending application views', () => {
     const agents = renderToStaticMarkup(<Agents runtime={null} pending/>)
 
     for (const markup of [dashboard, agents]) {
-      expect(markup).toContain('Loading')
-      expect(markup).not.toContain('Not Available')
-      expect(markup).not.toContain('Unknown')
+      expect(markup).toContain('Memuat')
+      expect(markup).not.toContain('Tidak Tersedia')
+      expect(markup).not.toContain('Tidak Diketahui')
     }
   })
 
   it('renders loading instead of an empty room or zero crew summary while Office is pending', () => {
     const markup = renderToStaticMarkup(<Office/>)
 
-    expect(markup).toContain('Loading')
+    expect(markup).toContain('Memuat')
     expect(markup).not.toContain('0 active work')
     expect(markup).not.toContain('No declared idle presence')
   })

@@ -49,7 +49,7 @@ describe('declared engineering roles', () => {
 
   it('keeps declared roles out of the pending and unavailable states', () => {
     const pending = renderToStaticMarkup(<Agents runtime={null} pending/>)
-    expect(pending).toContain('Loading')
+    expect(pending).toContain('Memuat')
     expect(pending).not.toContain('Sub-Agent Spesialis')
 
     const unavailable = renderToStaticMarkup(<Agents runtime={{ profiles: { availability: 'unavailable', data: [] } } as unknown as RuntimeSnapshot}/>)
