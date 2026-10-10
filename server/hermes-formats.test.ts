@@ -63,7 +63,7 @@ describe('Hermes profile list', () => {
     expect(parseProfiles(profileList)).toEqual([
       { name: 'default', model: 'anthropic/claude-sonnet-4', gateway: 'Running' },
       { name: 'coder', model: 'openai/gpt-5.5', gateway: 'Stopped' },
-      { name: 'scratch', model: 'Not configured', gateway: 'Stopped' },
+      { name: 'scratch', model: 'Belum dikonfigurasi', gateway: 'Stopped' },
     ])
   })
 

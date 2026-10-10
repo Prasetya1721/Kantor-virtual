@@ -269,8 +269,8 @@ function Lighting({ theme }: { theme: 'dark' | 'light' }) {
 }
 
 const FLOORS: { floor: Floor; label: string; title: string }[] = [
-  { floor: 2, label: 'Kamar & Balkon', title: 'Lantai 2: bedroom, lesehan and balcony' },
-  { floor: 1, label: 'Kantor', title: 'Lantai 1: office, lounge, pantry and game room' },
+  { floor: 2, label: 'Kamar & Balkon', title: 'Lantai 2: kamar tidur, lesehan, dan balkon' },
+  { floor: 1, label: 'Kantor', title: 'Lantai 1: kantor, ruang santai, dapur, dan ruang game' },
 ]
 const FLOOR_KEY = 'mc.officeFloor'
 const SLEEP_KEY = 'mc.officeSleep'
@@ -317,7 +317,7 @@ export default function Office3D({ stations, onSelect }: { stations: OfficeStati
   const placement = (station: OfficeStation) => wandering(station)?.placement ?? placementFor(station, layout, Math.max(0, meetingOrder.indexOf(station.id)))
   const floorCount = (value: Floor) => stations.filter((station) => floorOf(placement(station).position) === value).length
   const occupiedSeats = new Set(stations.filter((station) => station.room === 'Workspace' && station.roomPosition !== 'meeting-area' && station.state !== 'Offline').map((station) => station.seat))
-  return <div className="office-3d" ref={setKeyTarget} tabIndex={0} role="region" aria-label="3D office. Drag to rotate, right-drag or two fingers to pan, scroll to zoom, arrow keys pan when focused. Page Up and Page Down change floors." onKeyDown={(event) => {
+  return <div className="office-3d" ref={setKeyTarget} tabIndex={0} role="region" aria-label="Kantor 3D. Geser untuk memutar, klik kanan atau dua jari untuk menggeser, gulir untuk zoom, tombol panah menggeser saat fokus. Page Up dan Page Down mengganti lantai." onKeyDown={(event) => {
     if (event.key === 'PageUp' || event.key === 'PageDown') { event.preventDefault(); setFloor(event.key === 'PageUp' ? 2 : 1) }
   }}>
     <Canvas shadows dpr={[1, 2]} camera={{ position: [-3, 13, 16], fov: 40, near: 0.5, far: 150 }} gl={{ antialias: true }}>
@@ -333,22 +333,22 @@ export default function Office3D({ stations, onSelect }: { stations: OfficeStati
         const badge = officeStateBadge(station.state)
         const busy = ['Working', 'Reviewing', 'Collaborating'].includes(station.state)
         const idle = wandering(station)
-        return <button key={station.id} ref={register(labels, `agent-${station.id}`)} type="button" className={`agent-tag-3d state-${station.state.toLowerCase()}`} onClick={(event) => onSelect(station, event.currentTarget)} aria-label={`${station.name}. ${station.state}.${station.activity ? ` ${station.activity}.` : ''}${idle ? ` ${idle.placement.label ?? idle.stop.label}.` : ''} Open station details.`}>
+        return <button key={station.id} ref={register(labels, `agent-${station.id}`)} type="button" className={`agent-tag-3d state-${station.state.toLowerCase()}`} onClick={(event) => onSelect(station, event.currentTarget)} aria-label={`${station.name}. ${badge.label}.${station.activity ? ` ${station.activity}.` : ''}${idle ? ` ${idle.placement.label ?? idle.stop.label}.` : ''} Buka detail stasiun.`}>
           {busy && station.activity && <span className="speech speech-3d">{station.activity}</span>}
           {idle && <span className={`speech speech-3d speech-idle${idle.placement.pose === 'lie' ? ' speech-sleep' : ''}`}>{idle.placement.pose === 'lie' ? '💤 ' : ''}{idle.placement.label ?? idle.stop.label}</span>}
-          <span className="agent-tag-row"><span className="pixel-station-name">{station.privacy === 'locked' ? '🔒 ' : ''}{station.name}</span><span className={`badge ${badge.tone}`}>{station.state === 'Idle' ? 'Idle' : station.state}</span></span>
+          <span className="agent-tag-row"><span className="pixel-station-name">{station.privacy === 'locked' ? '🔒 ' : ''}{station.name}</span><span className={`badge ${badge.tone}`}>{badge.label}</span></span>
         </button>
       })}
     </div>
-    <div className="office-3d-floors" role="group" aria-label="Floors">
+    <div className="office-3d-floors" role="group" aria-label="Lantai">
       {FLOORS.map((item) => <button key={item.floor} type="button" className={floor === item.floor ? 'active' : ''} aria-pressed={floor === item.floor} onClick={() => setFloor(item.floor)} title={`${item.title} (Page ${item.floor === 2 ? 'Up' : 'Down'})`}>
         <b>{item.floor}</b><span>{item.label}</span><small>{floorCount(item.floor)}</small>
       </button>)}
     </div>
     <div className="office-3d-tools">
-      <button type="button" className={sleepMode ? 'active sleep' : ''} aria-pressed={sleepMode} onClick={() => { setSleepMode(!sleepMode); if (!sleepMode && idleSeats.length > 0) setFloor(2) }} title="Send every idle agent to bed on lantai 2">💤 Tidur</button>
-      <button type="button" className={panMode ? 'active' : ''} aria-pressed={panMode} onClick={() => setPanMode((value) => !value)} title="Drag moves the view instead of rotating it">✥ Geser</button>
-      <button type="button" onClick={() => view.current?.reset()} title="Back to the starting view">↺ Reset view</button>
+      <button type="button" className={sleepMode ? 'active sleep' : ''} aria-pressed={sleepMode} onClick={() => { setSleepMode(!sleepMode); if (!sleepMode && idleSeats.length > 0) setFloor(2) }} title="Kirim semua agen santai ke tempat tidur di lantai 2">💤 Tidur</button>
+      <button type="button" className={panMode ? 'active' : ''} aria-pressed={panMode} onClick={() => setPanMode((value) => !value)} title="Geser memindahkan tampilan, bukan memutarnya">✥ Geser</button>
+      <button type="button" onClick={() => view.current?.reset()} title="Kembali ke tampilan awal">↺ Atur ulang tampilan</button>
     </div>
   </div>
 }

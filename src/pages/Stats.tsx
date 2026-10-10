@@ -67,8 +67,9 @@ export function Stats({ dashboard, pending = false, onNavigate }: { dashboard: D
         <dl className="runtime-list">
           <div><dt>Profil Hermes</dt><dd>{runtime.profiles.availability === 'available' ? runtime.profiles.data.length : 'Tidak Tersedia'}</dd></div>
           <div><dt>Gateway berjalan</dt><dd>{runtime.profiles.availability === 'available' ? `${runtime.profiles.data.filter((profile) => profile.gateway === 'Running').length} dari ${runtime.profiles.data.length}` : 'Tidak Tersedia'}</dd></div>
-          <div><dt>Model dipakai</dt><dd>{runtime.profiles.availability === 'available' ? [...new Set(runtime.profiles.data.map((profile) => profile.model).filter((model) => model !== 'Not configured'))].join(', ') || '—' : 'Tidak Tersedia'}</dd></div>
+          <div><dt>Model dipakai</dt><dd>{runtime.profiles.availability === 'available' ? [...new Set(runtime.profiles.data.map((profile) => profile.model).filter((model) => model !== 'Belum dikonfigurasi'))].join(', ') || '—' : 'Tidak Tersedia'}</dd></div>
           <div><dt>OpenCode</dt><dd>{runtime.openCode.availability === 'available' ? runtime.openCode.data : 'Tidak terpasang'}</dd></div>
+          <div><dt>Status gateway</dt><dd>{runtime.profiles.availability === 'available' ? (runtime.profiles.data.some((profile) => profile.gateway === 'Running') ? 'Berjalan' : 'Berhenti') : 'Tidak Tersedia'}</dd></div>
         </dl>
       </article>
 

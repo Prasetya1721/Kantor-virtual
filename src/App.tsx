@@ -17,7 +17,7 @@ import { LockScreen } from './LockScreen.tsx'
 import { API_VERSION } from './api-version.ts'
 import { RefreshContext, usePolling } from './polling.ts'
 import { usePreferences } from './preferences.ts'
-import { HOME, navigation, pageFromHash, pageSlug, type Page } from './routes.ts'
+import { HOME, navigation, pageFromHash, pageLabel, pageSlug, type Page } from './routes.ts'
 import type { DashboardSnapshot } from './types.ts'
 
 function currentPage(): Page {
@@ -36,15 +36,15 @@ function Shell({ onRefresh, access, onAccessChange }: { onRefresh: () => void; a
   const health = usePolling<{ apiVersion?: number }>('/api/health', 60_000)
   const serverVersion = health.status === 'ready' ? health.data.apiVersion ?? 0 : health.status === 'failed' && health.httpStatus === 404 ? 0 : undefined
   const versionNotice = serverVersion === undefined || serverVersion === API_VERSION ? undefined
-    : serverVersion < API_VERSION ? 'The Ruang server is running an older version than this page, so newer menus (such as Memory) cannot load. Restart the server: stop it, run npm run build, then npm start (npm run dev restarts by itself).'
-      : 'This page is older than the Ruang server. Reload the page (and run npm run build if you use npm start).'
+    : serverVersion < API_VERSION ? 'Server Ruang menjalankan versi yang lebih lama daripada halaman ini, sehingga menu baru (seperti Memori) tidak dapat dimuat. Mulai ulang server: hentikan, jalankan npm run build, lalu npm start (npm run dev restart sendiri).'
+      : 'Halaman ini lebih lama daripada server Ruang. Muat ulang halaman (dan jalankan npm run build jika memakai npm start).'
 
   useEffect(() => {
     const onHashChange = () => setPage(currentPage())
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
-  useEffect(() => { document.title = `${page} · Ruang` }, [page])
+  useEffect(() => { document.title = `${pageLabel(page)} · Ruang` }, [page])
   useEffect(() => {
     if (menuOpen) drawer.current?.querySelector<HTMLElement>('nav a[aria-current="page"], nav a')?.focus()
   }, [menuOpen])
@@ -84,12 +84,12 @@ function Shell({ onRefresh, access, onAccessChange }: { onRefresh: () => void; a
     {menuOpen && <div className="drawer-backdrop" onClick={closeMenu} aria-hidden="true"/>}
     <aside id="app-sidebar" className="drawer" ref={drawer} hidden={!menuOpen} aria-label="Menu">
       <div className="drawer-head"><a className="brand" href="#/office" onClick={(event) => { event.preventDefault(); navigate(HOME) }}>RUANG<span>HERMES 3D</span></a><button type="button" className="icon-button" onClick={closeMenu} aria-label="Tutup menu" title="Tutup menu (Esc)">✕</button></div>
-      <nav aria-label="Main">{navigation.map((item) => <a href={`#/${pageSlug(item)}`} className={page === item ? 'active' : ''} aria-current={page === item ? 'page' : undefined} key={item} onClick={(event) => { event.preventDefault(); navigate(item) }}>{item}{item === 'Task Board' && pendingReviews > 0 && <span className="nav-badge" title="Tugas menunggu review">{pendingReviews}</span>}{item === 'Logs' && data && data.commands.failed > 0 && <span className="nav-badge" title="Pembacaan CLI gagal">{data.commands.failed}</span>}{item === 'Agents' && failedGateways > 0 && <span className="nav-badge" title="Gateway belum berjalan">{failedGateways}</span>}</a>)}</nav>
+      <nav aria-label="Utama">{navigation.map((item) => <a href={`#/${pageSlug(item)}`} className={page === item ? 'active' : ''} aria-current={page === item ? 'page' : undefined} key={item} onClick={(event) => { event.preventDefault(); navigate(item) }}>{pageLabel(item)}{item === 'Task Board' && pendingReviews > 0 && <span className="nav-badge" title="Tugas menunggu review">{pendingReviews}</span>}{item === 'Logs' && data && data.commands.failed > 0 && <span className="nav-badge" title="Pembacaan CLI gagal">{data.commands.failed}</span>}{item === 'Agents' && failedGateways > 0 && <span className="nav-badge" title="Gateway belum berjalan">{failedGateways}</span>}</a>)}</nav>
       <div className="sidebar-note"><span className="dot"/> MODE HANYA-BACA</div>
       <small className="drawer-hint">Tekan M untuk membuka atau menutup menu ini</small>
     </aside>
-    <main><header><span className="header-title"><button type="button" ref={menuButton} className="icon-button menu-button" onClick={() => (menuOpen ? closeMenu() : setMenuOpen(true))} aria-controls="app-sidebar" aria-expanded={menuOpen} aria-label={menuOpen ? 'Tutup menu' : 'Buka menu'} title="Menu (M)">☰{alerts > 0 && <span className="menu-alert" aria-label={`${alerts} peringatan di menu`}/>}</button><span>RUANG / {page.toUpperCase()}</span></span><span className="header-actions"><span className={`sync-label${dashboard.status === 'failed' ? ' text-bad' : ''}`}>{syncLabel}</span><button type="button" className="icon-button theme-toggle" onClick={toggleTheme} aria-label={`Ganti ke mode ${theme === 'dark' ? 'terang' : 'gelap'}`} title={`Ganti ke mode ${theme === 'dark' ? 'terang' : 'gelap'}`}>{theme === 'dark' ? '☀' : '☾'}</button><button type="button" className="refresh-button" onClick={onRefresh} aria-label="Segarkan semua sumber data">↻ SEGARKAN SEMUA</button></span></header>
-      {versionNotice && <section className="notice version-notice" role="alert"><strong>Restart needed.</strong> {versionNotice}</section>}
+    <main><header><span className="header-title"><button type="button" ref={menuButton} className="icon-button menu-button" onClick={() => (menuOpen ? closeMenu() : setMenuOpen(true))} aria-controls="app-sidebar" aria-expanded={menuOpen} aria-label={menuOpen ? 'Tutup menu' : 'Buka menu'} title="Menu (M)">☰{alerts > 0 && <span className="menu-alert" aria-label={`${alerts} peringatan di menu`}/>}</button><span>RUANG / {pageLabel(page).toUpperCase()}</span></span><span className="header-actions"><span className={`sync-label${dashboard.status === 'failed' ? ' text-bad' : ''}`}>{syncLabel}</span><button type="button" className="icon-button theme-toggle" onClick={toggleTheme} aria-label={`Ganti ke mode ${theme === 'dark' ? 'terang' : 'gelap'}`} title={`Ganti ke mode ${theme === 'dark' ? 'terang' : 'gelap'}`}>{theme === 'dark' ? '☀' : '☾'}</button><button type="button" className="refresh-button" onClick={onRefresh} aria-label="Segarkan semua sumber data">↻ SEGARKAN SEMUA</button></span></header>
+      {versionNotice && <section className="notice version-notice" role="alert"><strong>Perlu mulai ulang.</strong> {versionNotice}</section>}
       {content}
     </main></div>
 }

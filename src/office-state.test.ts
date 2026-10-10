@@ -13,10 +13,11 @@ describe('officeBadge', () => {
 })
 
 describe('officeStateBadge', () => {
-  it('renders only approved Office work states', () => {
-    expect(officeStateBadge('Working')).toEqual({ label: 'Working', tone: 'good' })
-    expect(officeStateBadge('Reviewing')).toEqual({ label: 'Reviewing', tone: 'good' })
-    expect(officeStateBadge('Offline')).toEqual({ label: 'Offline', tone: 'muted' })
-    expect(officeStateBadge('Unknown')).toEqual({ label: 'Unknown', tone: 'unknown' })
+  it('renders only approved Office work states, labelled in Indonesian', () => {
+    expect(officeStateBadge('Working')).toEqual({ label: 'Bekerja', tone: 'good' })
+    expect(officeStateBadge('Reviewing')).toEqual({ label: 'Meninjau', tone: 'good' })
+    expect(officeStateBadge('Offline')).toEqual({ label: 'Luring', tone: 'muted' })
+    expect(officeStateBadge('Unknown')).toEqual({ label: 'Tidak Diketahui', tone: 'unknown' })
+    expect(officeStateBadge('Idle')).toEqual({ label: 'Santai', tone: 'unknown' })
   })
 })

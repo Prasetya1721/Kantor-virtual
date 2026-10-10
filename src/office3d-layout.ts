@@ -124,23 +124,23 @@ function stallSpot(stall: Vec3, x: number, z: number, facing: number, seated = f
 function idleStops(building: OfficeLayout['building'], baksoCart: Vec3, kopiBike: Vec3, beds: Vec3[]): IdleStop[] {
   const [tableX, , tableZ] = LESEHAN_TABLE
   return [
-    { key: 'tidur', label: 'Sleeping', spots: beds.map((bed) => bedSpot(bed)) },
-    { key: 'balkon', label: 'Relaxing on the balcony', spots: [
+    { key: 'tidur', label: 'Tidur', spots: beds.map((bed) => bedSpot(bed)) },
+    { key: 'balkon', label: 'Bersantai di balkon', spots: [
       upstairs(BALCONY_TABLE[0] - 0.85, BALCONY_TABLE[2], Math.PI / 2, { seated: true }),
       upstairs(BALCONY_TABLE[0] + 0.85, BALCONY_TABLE[2], -Math.PI / 2, { seated: true }),
-      upstairs(HAMMOCK[0] + 0.9, HAMMOCK[2], -Math.PI / 2, { pose: 'lie', height: 0.62, label: 'Napping in the hammock' }),
-      upstairs(7.9, BALCONY.maxZ - 0.45, 0, { label: 'Enjoying the view from the balcony' }),
+      upstairs(HAMMOCK[0] + 0.9, HAMMOCK[2], -Math.PI / 2, { pose: 'lie', height: 0.62, label: 'Tidur siang di hammock' }),
+      upstairs(7.9, BALCONY.maxZ - 0.45, 0, { label: 'Menikmati pemandangan dari balkon' }),
     ] },
-    { key: 'lesehan', label: 'Lesehan upstairs', spots: [[-1, 0, Math.PI / 2], [1, 0, -Math.PI / 2], [0, -0.85, 0], [0, 0.85, Math.PI]].map(([dx, dz, facing]) => upstairs(tableX + dx, tableZ + dz, facing, { pose: 'floor' })) },
-    { key: 'lounge', label: 'Relaxing in the lounge', spots: LOUNGE_SEATS.map(([x, , z], index) => spot(x, z, LOUNGE_FACING[index], true)) },
-    { key: 'galon', label: 'Getting water from the galon', spots: [spot(8.35, -0.4, Math.PI / 2), spot(8.2, -1.05, 2.2), spot(8.2, 0.3, 1.1)] },
+    { key: 'lesehan', label: 'Lesehan di lantai atas', spots: [[-1, 0, Math.PI / 2], [1, 0, -Math.PI / 2], [0, -0.85, 0], [0, 0.85, Math.PI]].map(([dx, dz, facing]) => upstairs(tableX + dx, tableZ + dz, facing, { pose: 'floor' })) },
+    { key: 'lounge', label: 'Bersantai di ruang santai', spots: LOUNGE_SEATS.map(([x, , z], index) => spot(x, z, LOUNGE_FACING[index], true)) },
+    { key: 'galon', label: 'Mengambil air galon', spots: [spot(8.35, -0.4, Math.PI / 2), spot(8.2, -1.05, 2.2), spot(8.2, 0.3, 1.1)] },
     // On the gerobak's plastic stools, facing the cart.
-    { key: 'bakso', label: 'Eating bakso', spots: [stallSpot(baksoCart, 0.5, 1.1, Math.PI, true), stallSpot(baksoCart, -0.3, 1.2, Math.PI, true), stallSpot(baksoCart, 1.3, 0.9, -2.4)] },
-    { key: 'dapur', label: 'In the kitchen', spots: [spot(8.25, 2.6, Math.PI / 2), spot(8.3, 0.65, Math.PI / 2), spot(8.25, 3.3, Math.PI / 2)] },
-    { key: 'kopi', label: 'Coffee at the kopi bike', spots: [stallSpot(kopiBike, -0.5, 0.85, Math.PI), stallSpot(kopiBike, 0.5, 0.85, Math.PI), stallSpot(kopiBike, 1.45, 0.3, -Math.PI / 2)] },
-    { key: 'game', label: 'Playing ping-pong', spots: [spot(PING_PONG[0] - 1.75, PING_PONG[2], Math.PI / 2), spot(PING_PONG[0] + 1.75, PING_PONG[2], -Math.PI / 2), spot(BEANBAGS[0][0], BEANBAGS[0][2], Math.PI, true, 'Gaming on the console')] },
-    { key: 'arcade', label: 'Playing arcade games', spots: [spot(ARCADES[0][0], ARCADES[0][2] + 0.8, Math.PI), spot(ARCADES[1][0], ARCADES[1][2] + 0.8, Math.PI), spot(BEANBAGS[1][0], BEANBAGS[1][2], Math.PI, true, 'Gaming on the console')] },
-    { key: 'jalan', label: 'Taking a stroll', spots: [spot(FLAG[0] - 0.8, FLAG[2] + 0.3, Math.PI / 2), spot(building.minX + 0.95, -0.9, -Math.PI / 2), spot(1.3, -4.4, Math.PI)] },
+    { key: 'bakso', label: 'Makan bakso', spots: [stallSpot(baksoCart, 0.5, 1.1, Math.PI, true), stallSpot(baksoCart, -0.3, 1.2, Math.PI, true), stallSpot(baksoCart, 1.3, 0.9, -2.4)] },
+    { key: 'dapur', label: 'Di dapur', spots: [spot(8.25, 2.6, Math.PI / 2), spot(8.3, 0.65, Math.PI / 2), spot(8.25, 3.3, Math.PI / 2)] },
+    { key: 'kopi', label: 'Ngopi di sepeda kopi', spots: [stallSpot(kopiBike, -0.5, 0.85, Math.PI), stallSpot(kopiBike, 0.5, 0.85, Math.PI), stallSpot(kopiBike, 1.45, 0.3, -Math.PI / 2)] },
+    { key: 'game', label: 'Main ping-pong', spots: [spot(PING_PONG[0] - 1.75, PING_PONG[2], Math.PI / 2), spot(PING_PONG[0] + 1.75, PING_PONG[2], -Math.PI / 2), spot(BEANBAGS[0][0], BEANBAGS[0][2], Math.PI, true, 'Main konsol')] },
+    { key: 'arcade', label: 'Main arcade', spots: [spot(ARCADES[0][0], ARCADES[0][2] + 0.8, Math.PI), spot(ARCADES[1][0], ARCADES[1][2] + 0.8, Math.PI), spot(BEANBAGS[1][0], BEANBAGS[1][2], Math.PI, true, 'Main konsol')] },
+    { key: 'jalan', label: 'Jalan-jalan santai', spots: [spot(FLAG[0] - 0.8, FLAG[2] + 0.3, Math.PI / 2), spot(building.minX + 0.95, -0.9, -Math.PI / 2), spot(1.3, -4.4, Math.PI)] },
   ]
 }
 

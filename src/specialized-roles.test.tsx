@@ -41,8 +41,8 @@ describe('declared engineering roles', () => {
     expect(markup).toContain('Front-End Developer')
     expect(markup).toContain('QA (Quality Assurance) Tester')
     // The live profile list is still the source of truth for agents.
-    expect(markup).toContain('Hermes profile')
-    expect(markup).toContain('OpenCode (CLI tool)')
+    expect(markup).toContain('Profil Hermes')
+    expect(markup).toContain('OpenCode (alat CLI)')
     // The 2-CPU rationale must survive: these are on-demand, not daemons.
     expect(markup).toContain('on-demand')
   })
@@ -53,7 +53,7 @@ describe('declared engineering roles', () => {
     expect(pending).not.toContain('Sub-Agent Spesialis')
 
     const unavailable = renderToStaticMarkup(<Agents runtime={{ profiles: { availability: 'unavailable', data: [] } } as unknown as RuntimeSnapshot}/>)
-    expect(unavailable).toContain('Not Available')
+    expect(unavailable).toContain('Tidak Tersedia')
     expect(unavailable).not.toContain('Sub-Agent Spesialis')
   })
 })

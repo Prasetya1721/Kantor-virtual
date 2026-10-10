@@ -170,7 +170,7 @@ function profileRows(output: string): ProfileRow[] {
     // A display name renders as "Display Name (id)"; the id is the stable profile name.
     const displayed = match[1].trim()
     const name = displayed.match(/\(([\w.-]+)\)$/)?.[1] ?? displayed
-    const model = match[2] === '—' ? 'Not configured' : match[2]
+    const model = match[2] === '—' ? 'Belum dikonfigurasi' : match[2]
     const gateway: GatewayState = withGateway ? (withGateway[3].toLowerCase() === 'running' ? 'Running' : 'Stopped') : 'Unknown'
     return [{ name, model, gateway }]
   })
