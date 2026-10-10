@@ -28,3 +28,14 @@ jobs:
           npm install --global --prefix "$RUNNER_TEMP/mc" ./ruang-*.tgz
           "$RUNNER_TEMP/mc/bin/ruang" --version
           bash -n install.sh
+      - name: Installer runs end to end
+        # Runs the installer for real against the packed tarball, into a temp
+        # prefix. Catches shell bugs (unset variables under set -u, bad paths)
+        # that a syntax check cannot, and asserts the exit status stays 0.
+        env:
+          RUANG_HOME: ${{ runner.temp }}/ruang-home
+          RUANG_BIN: ${{ runner.temp }}/ruang-bin
+        run: |
+          npm pack --silent --pack-destination "$RUNNER_TEMP" >/dev/null
+          bash install.sh --tarball "$RUNNER_TEMP"/ruang-*.tgz
+          "$RUANG_BIN/ruang" --version

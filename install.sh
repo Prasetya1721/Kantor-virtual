@@ -279,7 +279,7 @@ main() {
   echo
   info "Start it:   $COMMAND        (or $COMMAND --port 3005)"
   info "Open:       http://127.0.0.1:3001"
-  info "On a server, forward the port from your laptop: ssh -L 3001:127.0.0.1:3001 $USER@<server>"
+  info "On a server, forward the port from your laptop: ssh -L 3001:127.0.0.1:3001 ${USER:-$(id -un 2>/dev/null || echo you)}@<server>"
   info "Update:     run this installer again.   Remove: add --uninstall"
 }
 
