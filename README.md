@@ -15,7 +15,7 @@
 | **Versi** | 0.2.0 |
 | **Bahasa antarmuka** | Indonesia (label, pesan, dan judul halaman) |
 | **Basis** | fork dari `yugienugraha/ruang`, riwayat upstream ada di remote `upstream` |
-| **Rilis/tag** | belum ada; jalankan dari checkout (lihat *Instalasi*) |
+| **Rilis** | `v0.2.0` — paket `ruang.tgz` dilampirkan ke [release](https://github.com/Prasetya1721/Kantor-virtual/releases/latest) |
 | **Pemeriksaan** | `npm run lint`, `npm test`, `npm run build` |
 
 ## Prasyarat
@@ -26,7 +26,31 @@
 
 ## Instalasi
 
-Dari checkout (cara yang berlaku untuk fork ini):
+Lewat installer (memasang rilis terakhir dari repo ini):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Prasetya1721/Kantor-virtual/main/install.sh | bash
+```
+
+Lalu jalankan dan buka http://127.0.0.1:3001:
+
+```bash
+ruang                        # atau: ruang --port 3005
+```
+
+- **Jalan di latar belakang dan saat boot (Linux):** tambahkan `--service` untuk memasang systemd user service:
+  `curl -fsSL https://raw.githubusercontent.com/Prasetya1721/Kantor-virtual/main/install.sh | bash -s -- --service`
+  Supaya tetap jalan setelah logout, jalankan juga `loginctl enable-linger $USER`.
+- **Perbarui:** jalankan perintah install lagi.
+- **Hapus:** tambahkan `--uninstall`.
+- **Opsi lain:** `--version v0.2.0` memasang rilis tertentu; `--from-source` membangun dari `main` (butuh `git`); `--tarball <path>` memasang paket `.tgz` lokal. Lihat `install.sh --help`.
+- **Di server:** Ruang hanya mendengarkan `127.0.0.1`. Dari laptop, jalankan `ssh -L 3001:127.0.0.1:3001 user@server`, lalu buka http://127.0.0.1:3001.
+
+Semua masuk ke `~/.local/share/ruang`, plus perintah `ruang` di `~/.local/bin`. Instalasi dengan nama proyek sebelumnya (`mission-control`, `majujaya`) dibersihkan otomatis. Tidak ada `sudo` dan tidak ada yang dipasang system-wide. Mau membaca skripnya dulu? `curl -fsSL https://raw.githubusercontent.com/Prasetya1721/Kantor-virtual/main/install.sh -o install.sh`, baca, lalu `bash install.sh`.
+
+**Dengan Node.js 20+ milik sendiri:** unduh `ruang.tgz` dari [release terakhir](https://github.com/Prasetya1721/Kantor-virtual/releases/latest) lalu jalankan `npm install -g ./ruang.tgz`.
+
+**Dari checkout** (untuk pengembangan):
 
 ```bash
 git clone https://github.com/Prasetya1721/Kantor-virtual.git
@@ -35,20 +59,6 @@ npm install
 npm run build      # UI ke dist/, server ke build/server/
 npm start          # buka http://127.0.0.1:3001
 ```
-
-Server hanya mengikat `127.0.0.1`. Kalau dijalankan di server terpisah, dari laptop jalankan `ssh -L 3001:127.0.0.1:3001 user@server`, lalu buka http://127.0.0.1:3001.
-
-Mau menjalankannya sebagai layanan latar belakang? `install.sh` di repo ini mendukung `--tarball <path>` (memasang paket `.tgz` lokal) dan `--from-source`:
-
-```bash
-npm pack                                        # menghasilkan ruang-0.2.0.tgz
-bash install.sh --tarball ruang-0.2.0.tgz       # pasang ke ~/.local/share/ruang
-bash install.sh --tarball ruang-0.2.0.tgz --service   # plus systemd user service
-```
-
-Skrip itu memasang ke `~/.local/share/ruang` dan perintah `ruang` ke `~/.local/bin`, tanpa `sudo`. Kalau Node.js 20+ tidak ditemukan, ia mengunduh Node.js privat untuk Ruang saja. Untuk opsi lain jalankan `install.sh --help`.
-
-> **Catatan.** Skrip `install.sh` masih memuat `REPO="yugienugraha/ruang"` sebagai sumber rilis bawaan, jadi tanpa `--tarball` ia akan memasang upstream, bukan fork ini. Ubah variabel `REPO` di `install.sh` kalau ingin alur rilis fork ini.
 
 ## Pengembangan
 
@@ -63,6 +73,14 @@ Produksi dari checkout (satu proses, menyajikan UI hasil build dan API):
 npm run build
 npm start          # buka http://127.0.0.1:3001
 ```
+
+**Merilis versi baru.** Workflow *Release* (`.github/workflows/release.yml`) berjalan saat tag `v*` di-push: ia memeriksa tag cocok dengan `version` di `package.json`, menjalankan lint, tes, dan build, lalu melampirkan `ruang.tgz` ke GitHub release — paket itulah yang diunduh installer.
+
+```bash
+npm version 0.2.1 && git push origin main --follow-tags
+```
+
+Publishing ke npm bersifat opsional: tambahkan secret `NPM_TOKEN` di repo untuk mengaktifkannya. Tanpa secret itu, langkah npm dilewati dan release GitHub tetap dibuat.
 
 **Setelah menarik kode baru** jalankan `npm install && npm run build` lalu mulai ulang `npm start` (`npm start` yang sedang jalan tetap menyajikan API lama; `npm run dev` restart sendiri). UI memeriksa `/api/health` dan menampilkan banner *Perlu mulai ulang* saat server lebih lama daripada halaman. Setel `RUANG_PORT` (atau pakai `--port`) untuk mengganti port. Pengaturan lama `MISSION_CONTROL_*` masih berfungsi.
 

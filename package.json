@@ -5,9 +5,9 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yugienugraha/ruang.git"
+    "url": "git+https://github.com/Prasetya1721/Kantor-virtual.git"
   },
-  "homepage": "https://github.com/yugienugraha/ruang#readme",
+  "homepage": "https://github.com/Prasetya1721/Kantor-virtual#readme",
   "bin": {
     "ruang": "bin/ruang.js"
   },
