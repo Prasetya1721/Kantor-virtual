@@ -4,8 +4,8 @@ export const USAGE_PERIODS = [1, 7, 30] as const
 export type Period = typeof USAGE_PERIODS[number]
 
 const SOURCE_LABELS: Record<string, string> = {
-  cli: 'Terminal (CLI)', kanban: 'Kanban tasks', cron: 'Cron jobs', telegram: 'Telegram', discord: 'Discord', whatsapp: 'WhatsApp',
-  slack: 'Slack', signal: 'Signal', email: 'Email', api: 'API', acp: 'Editor (ACP)', webhook: 'Webhooks', subagent: 'Sub-agents',
+  cli: 'Terminal (CLI)', kanban: 'Tugas Kanban', cron: 'Cron', telegram: 'Telegram', discord: 'Discord', whatsapp: 'WhatsApp',
+  slack: 'Slack', signal: 'Signal', email: 'Email', api: 'API', acp: 'Editor (ACP)', webhook: 'Webhook', subagent: 'Sub-agen',
 }
 
 export function sourceLabel(source: string): string {

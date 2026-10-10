@@ -5,8 +5,8 @@ import { formatCost, sourceLabel } from './usage.ts'
 
 describe('token usage view', () => {
   it('labels kinds of work and formats estimated costs', () => {
-    expect(sourceLabel('kanban')).toBe('Kanban tasks')
-    expect(sourceLabel('cron')).toBe('Cron jobs')
+    expect(sourceLabel('kanban')).toBe('Tugas Kanban')
+    expect(sourceLabel('cron')).toBe('Cron')
     expect(sourceLabel('matrix')).toBe('Matrix')
     expect(formatCost(undefined)).toBe('—')
     expect(formatCost(0.0123)).toBe('$0.0123')
