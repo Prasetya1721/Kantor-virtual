@@ -12,10 +12,10 @@
 
 | | |
 |---|---|
-| **Versi** | 0.2.0 |
+| **Versi** | 0.2.1 |
 | **Bahasa antarmuka** | Indonesia (label, pesan, dan judul halaman) |
 | **Basis** | fork dari `yugienugraha/ruang`, riwayat upstream ada di remote `upstream` |
-| **Rilis** | `v0.2.0` — paket `ruang.tgz` dilampirkan ke [release](https://github.com/Prasetya1721/Kantor-virtual/releases/latest) |
+| **Rilis** | `v0.2.1` — paket `ruang.tgz` dilampirkan ke [release](https://github.com/Prasetya1721/Kantor-virtual/releases/latest) |
 | **Pemeriksaan** | `npm run lint`, `npm test`, `npm run build` |
 
 ## Prasyarat
