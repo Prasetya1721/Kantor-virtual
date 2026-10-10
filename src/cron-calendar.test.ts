@@ -36,7 +36,7 @@ describe('month entries', () => {
   })
 
   it('summarises frequent cron jobs and intervals instead of listing every run', () => {
-    expect(october([job({ schedule: '*/15 * * * *' })]).get('2026-10-01')).toEqual([{ job: 'Job', kind: 'interval', label: '96× a day' }])
+    expect(october([job({ schedule: '*/15 * * * *' })]).get('2026-10-01')).toEqual([{ job: 'Job', kind: 'interval', label: '96× sehari' }])
     expect(october([job({ schedule: 'every 30m' })]).get('2026-10-02')).toEqual([{ job: 'Job', kind: 'interval', label: 'every 30m' }])
     const everyTwoDays = october([job({ schedule: 'every 2d', nextRun: '2026-10-03T06:00:00+07:00' })])
     expect([...everyTwoDays.keys()].slice(0, 3)).toEqual(['2026-10-03', '2026-10-05', '2026-10-07'])

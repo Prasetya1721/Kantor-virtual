@@ -14,8 +14,8 @@ const quiet = (profile: string) => ({ profile, availability: 'available' as cons
 describe('live agent activity', () => {
   it('classifies chat replies, cron runs and tool use from agent.log', () => {
     const chat = parseRecentActivity('--- ~/.hermes/logs/agent.log [since=3m] (last 80) ---\n2026-09-27 12:00:01,000 INFO [tg:1] gateway.platforms.telegram: inbound message from user\n2026-09-27 12:00:02,000 INFO [tg:1] run_agent: turn started\n')
-    expect(chat).toMatchObject({ active: true, kind: 'chat', label: 'Replying to a chat', lastSeen: '2026-09-27 12:00:02,000' })
-    expect(parseRecentActivity('2026-09-27 12:00:01,000 INFO cron.scheduler: running job a1b2\n')).toMatchObject({ kind: 'cron', label: 'Running a scheduled job' })
+    expect(chat).toMatchObject({ active: true, kind: 'chat', label: 'Membalas chat', lastSeen: '2026-09-27 12:00:02,000' })
+    expect(parseRecentActivity('2026-09-27 12:00:01,000 INFO cron.scheduler: running job a1b2\n')).toMatchObject({ kind: 'cron', label: 'Menjalankan tugas terjadwal' })
     expect(parseRecentActivity('2026-09-27 12:00:01,000 INFO tools.terminal: running `opencode run fix`\n')).toMatchObject({ kind: 'tools', mentionsOpenCode: true })
   })
 
@@ -49,12 +49,12 @@ describe('office placement from live activity', () => {
 
   it('moves a chatting or scheduled agent out of the Lounge into the Workspace', () => {
     const office = buildOfficeSnapshot(runtime, emptyBoard, emptyActivity, { now: at, agentActivity: live([
-      { profile: 'default', availability: 'available', active: true, kind: 'chat', label: 'Replying to a chat', mentionsOpenCode: false },
-      { profile: 'coder', availability: 'available', active: true, kind: 'cron', label: 'Running a scheduled job', mentionsOpenCode: true },
+      { profile: 'default', availability: 'available', active: true, kind: 'chat', label: 'Membalas chat', mentionsOpenCode: false },
+      { profile: 'coder', availability: 'available', active: true, kind: 'cron', label: 'Menjalankan tugas terjadwal', mentionsOpenCode: true },
     ]) })
     expect(office.stations).toMatchObject([
-      { name: 'default', state: 'Collaborating', room: 'Workspace', roomPosition: 'meeting-area', activity: 'Replying to a chat', seat: 1 },
-      { name: 'coder', state: 'Working', room: 'Workspace', roomPosition: 'assigned-desk', activity: 'Running a scheduled job', seat: 2 },
+      { name: 'default', state: 'Collaborating', room: 'Workspace', roomPosition: 'meeting-area', activity: 'Membalas chat', seat: 1 },
+      { name: 'coder', state: 'Working', room: 'Workspace', roomPosition: 'assigned-desk', activity: 'Menjalankan tugas terjadwal', seat: 2 },
       { name: 'opencode', state: 'Working', room: 'Workspace', activity: 'Building via OpenCode', seat: 3 },
     ])
     expect(office.summary).toMatchObject({ active: 3, idle: 0 })

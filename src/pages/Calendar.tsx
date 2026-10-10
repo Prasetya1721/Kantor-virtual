@@ -5,8 +5,8 @@ import { usePolling } from '../polling.ts'
 import type { CalendarSnapshot, ScheduledJob } from '../types.ts'
 import { EmptyState, LoadingState, PageTitle, SourceStatus, Unavailable } from '../ui.tsx'
 
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-const KIND_LABEL: Record<CalendarEntry['kind'], string> = { run: 'Scheduled run', interval: 'Repeats through the day', overdue: 'Overdue', 'last-ok': 'Last run · ok', 'last-failed': 'Last run · failed' }
+const WEEKDAYS = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
+const KIND_LABEL: Record<CalendarEntry['kind'], string> = { run: 'Jalan terjadwal', interval: 'Berulang sepanjang hari', overdue: 'Terlambat', 'last-ok': 'Jalan terakhir · ok', 'last-failed': 'Jalan terakhir · gagal' }
 
 function todayKey(): string {
   const now = new Date()
@@ -28,14 +28,14 @@ export function MonthView({ jobs: allJobs }: { jobs: ScheduledJob[] }) {
   const cells = [...Array(lead).fill(null), ...Array.from({ length: days }, (_, index) => index + 1)]
   const move = (delta: number) => setCursor(({ year, month }) => { const next = new Date(year, month + delta, 1); return { year: next.getFullYear(), month: next.getMonth() } })
   const selectedEntries = entries.get(selected) ?? []
-  return <section className="month-view" aria-label="Cron calendar">
+  return <section className="month-view" aria-label="Kalender cron">
     <header className="month-head">
-      <button type="button" className="icon-button" onClick={() => move(-1)} aria-label="Previous month">‹</button>
+      <button type="button" className="icon-button" onClick={() => move(-1)} aria-label="Bulan sebelumnya">‹</button>
       <h2>{first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</h2>
-      <button type="button" className="icon-button" onClick={() => move(1)} aria-label="Next month">›</button>
-      <button type="button" className="refresh-button" onClick={() => { const now = new Date(); setCursor({ year: now.getFullYear(), month: now.getMonth() }); setSelected(today) }}>Today</button>
-      {agents.length > 1 && <label className="month-filter"><span>Agent</span><select value={agent} onChange={(event) => setAgent(event.target.value)}><option value="">All agents ({allJobs.length})</option>{agents.map((item) => <option key={item} value={item}>{agentLabel(item)} ({allJobs.filter((job) => job.agent === item).length})</option>)}</select></label>}
-      <span className="month-legend"><i className="kind-run"/>run <i className="kind-interval"/>repeating <i className="kind-last-ok"/>last ok <i className="kind-last-failed"/>failed / overdue</span>
+      <button type="button" className="icon-button" onClick={() => move(1)} aria-label="Bulan berikutnya">›</button>
+      <button type="button" className="refresh-button" onClick={() => { const now = new Date(); setCursor({ year: now.getFullYear(), month: now.getMonth() }); setSelected(today) }}>Hari ini</button>
+      {agents.length > 1 && <label className="month-filter"><span>Agen</span><select value={agent} onChange={(event) => setAgent(event.target.value)}><option value="">Semua agen ({allJobs.length})</option>{agents.map((item) => <option key={item} value={item}>{agentLabel(item)} ({allJobs.filter((job) => job.agent === item).length})</option>)}</select></label>}
+      <span className="month-legend"><i className="kind-run"/>jalan <i className="kind-interval"/>berulang <i className="kind-last-ok"/>terakhir ok <i className="kind-last-failed"/>gagal / terlambat</span>
     </header>
     <div className="month-grid" role="grid">
       {WEEKDAYS.map((day) => <div key={day} className="month-weekday" role="columnheader">{day}</div>)}
@@ -43,24 +43,24 @@ export function MonthView({ jobs: allJobs }: { jobs: ScheduledJob[] }) {
         if (day === null) return <div key={`lead-${index}`} className="month-cell empty" aria-hidden="true"/>
         const key = dayKey(cursor.year, cursor.month, day)
         const list = entries.get(key) ?? []
-        return <button type="button" role="gridcell" key={key} className={`month-cell${key === today ? ' today' : ''}${key === selected ? ' selected' : ''}${key < today ? ' past' : ''}`} onClick={() => setSelected(key)} aria-label={`${key}: ${list.length} item${list.length === 1 ? '' : 's'}`} aria-selected={key === selected}>
+        return <button type="button" role="gridcell" key={key} className={`month-cell${key === today ? ' today' : ''}${key === selected ? ' selected' : ''}${key < today ? ' past' : ''}`} onClick={() => setSelected(key)} aria-label={`${key}: ${list.length} entri`} aria-selected={key === selected}>
           <span className="month-day">{day}</span>
           {list.slice(0, 3).map((entry, entryIndex) => <span key={entryIndex} className={`month-entry kind-${entry.kind}`} title={`${entry.job}${entry.agent ? ` (${agentLabel(entry.agent)})` : ''} · ${KIND_LABEL[entry.kind]} ${entry.label}`}><b>{entry.label}</b> {entry.job}</span>)}
-          {list.length > 3 && <span className="month-more">+{list.length - 3} more</span>}
+          {list.length > 3 && <span className="month-more">+{list.length - 3} lagi</span>}
           {list.length > 0 && <span className="month-dots" aria-hidden="true">{list.slice(0, 4).map((entry, entryIndex) => <i key={entryIndex} className={`kind-${entry.kind}`}/>)}</span>}
         </button>
       })}
     </div>
     <div className="month-day-detail">
       <p className="eyebrow">{new Date(`${selected}T00:00:00`).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-      {selectedEntries.length === 0 ? <p className="muted">Nothing scheduled on this day.</p> : <ul>{selectedEntries.map((entry, index) => <li key={index}><span className={`badge kind-${entry.kind}`}>{KIND_LABEL[entry.kind]}</span> <strong>{entry.job}</strong> <span className="muted">{entry.label}</span>{entry.agent && <span className="chip">{agentLabel(entry.agent)}</span>}</li>)}</ul>}
-      <small className="muted">Times are the Hermes host's local time. Paused jobs only show their last run.</small>
+      {selectedEntries.length === 0 ? <p className="muted">Tidak ada jadwal di hari ini.</p> : <ul>{selectedEntries.map((entry, index) => <li key={index}><span className={`badge kind-${entry.kind}`}>{KIND_LABEL[entry.kind]}</span> <strong>{entry.job}</strong> <span className="muted">{entry.label}</span>{entry.agent && <span className="chip">{agentLabel(entry.agent)}</span>}</li>)}</ul>}
+      <small className="muted">Waktu mengikuti zona waktu lokal host Hermes. Tugas yang dijeda hanya menampilkan jalan terakhirnya.</small>
     </div>
   </section>
 }
 
 function FailedProfiles({ profiles }: { profiles: string[] }) {
-  return <p className="file-notice" role="status">Cron jobs of {profiles.map(agentLabel).join(', ')} could not be read, so they are missing here.</p>
+  return <p className="file-notice" role="status">Cron milik {profiles.map(agentLabel).join(', ')} tidak dapat dibaca, jadi tidak tampil di sini.</p>
 }
 
 /** The cron month view with its own data, for the Office overlay. */
@@ -68,7 +68,7 @@ export function CalendarOverlayView() {
   const snapshot = usePolling<CalendarSnapshot>('/api/calendar', 30_000)
   const jobs = snapshot.status === 'ready' ? snapshot.data.jobs : undefined
   const failed = snapshot.status === 'ready' ? snapshot.data.failedProfiles : undefined
-  if (snapshot.status === 'pending') return <LoadingState message="Reading cron jobs..."/>
+  if (snapshot.status === 'pending') return <LoadingState message="Membaca cron..."/>
   return <>
     <Unavailable source={jobs} request={snapshot}/>
     {failed && <FailedProfiles profiles={failed}/>}
@@ -81,16 +81,16 @@ export function Calendar() {
   const data = snapshot.status === 'ready' ? snapshot.data : undefined
   const jobs = data?.jobs
   const sorted = [...(jobs?.data ?? [])].sort((a, b) => (a.nextRun ?? '~').localeCompare(b.nextRun ?? '~'))
-  return <><PageTitle eyebrow="HERMES CRON" title="Calendar">Scheduled Hermes cron jobs of every agent (Hermes keeps cron per profile), including paused and completed ones. General calendar events are not inferred or displayed.</PageTitle>
+  return <><PageTitle eyebrow="CRON HERMES" title="Kalender">Cron Hermes terjadwal dari setiap agen (Hermes menyimpan cron per profil), termasuk yang dijeda dan yang sudah selesai. Agenda kalender umum tidak disimpulkan atau ditampilkan.</PageTitle>
     <SourceStatus source={jobs} fetchedAt={data?.fetchedAt} request={snapshot}/><Unavailable source={jobs} request={snapshot}/>
     {data?.failedProfiles && <FailedProfiles profiles={data.failedProfiles}/>}
     {jobs?.availability === 'available' && sorted.length > 0 && <MonthView jobs={jobs.data}/>}
-    {jobs?.availability === 'available' && (sorted.length === 0 ? <EmptyState title="No scheduled jobs">Hermes did not report any cron jobs. Create one with <code>hermes cron create</code>.</EmptyState> : <section className="data-list">{sorted.map((job) => <article key={`${job.agent ?? ''}:${job.id ?? `${job.name}-${job.schedule}`}`}>
-      <div><h2>{job.name}{job.agent && <span className="chip job-agent">{agentLabel(job.agent)}</span>}</h2><p><code>{job.schedule}</code>{job.repeat && <> · repeat {job.repeat}</>}</p></div>
+    {jobs?.availability === 'available' && (sorted.length === 0 ? <EmptyState title="Tidak ada jadwal">Hermes tidak melaporkan cron apa pun. Buat satu dengan <code>hermes cron create</code>.</EmptyState> : <section className="data-list">{sorted.map((job) => <article key={`${job.agent ?? ''}:${job.id ?? `${job.name}-${job.schedule}`}`}>
+      <div><h2>{job.name}{job.agent && <span className="chip job-agent">{agentLabel(job.agent)}</span>}</h2><p><code>{job.schedule}</code>{job.repeat && <> · ulangi {job.repeat}</>}</p></div>
       <dl>
         {job.status && <div><dt>Status</dt><dd><span className={`badge ${statusTone(job.status)}`}>{job.status}</span></dd></div>}
-        <div><dt>{job.overdue ? 'Overdue since' : 'Next run'}</dt><dd className={job.overdue ? 'text-bad' : ''}>{formatDateTime(job.nextRun)}</dd></div>
-        {job.lastRun && <div><dt>Last run</dt><dd>{formatDateTime(job.lastRun)} <span className={`badge ${job.lastRunOk ? 'good' : 'bad'}`}>{job.lastRunOk ? 'ok' : 'failed'}</span></dd></div>}
+        <div><dt>{job.overdue ? 'Terlambat sejak' : 'Jalan berikutnya'}</dt><dd className={job.overdue ? 'text-bad' : ''}>{formatDateTime(job.nextRun)}</dd></div>
+        {job.lastRun && <div><dt>Jalan terakhir</dt><dd>{formatDateTime(job.lastRun)} <span className={`badge ${job.lastRunOk ? 'good' : 'bad'}`}>{job.lastRunOk ? 'ok' : 'gagal'}</span></dd></div>}
       </dl>
     </article>)}</section>)}
   </>

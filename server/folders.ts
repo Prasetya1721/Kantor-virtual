@@ -55,7 +55,7 @@ export function hermesRoot(env: NodeJS.ProcessEnv = process.env, home = homedir(
 /** Normalises a client path to a safe relative path ('' is the profile root). */
 export function safeRelativePath(input: unknown): string {
   if (input === undefined || input === '' || input === '/') return ''
-  if (typeof input !== 'string' || input.length > 1024 || input.includes('\0')) throw new FolderError('Invalid path.', 400)
+  if (typeof input !== 'string' || input.length > 1024 || input.includes('\0')) throw new FolderError('Jalur tidak valid.', 400)
   const normalized = path.posix.normalize(input.replace(/\\/g, '/')).replace(/^\/+/, '').replace(/\/+$/, '')
   if (normalized === '.' ) return ''
   if (normalized.split('/').some((part) => part === '..')) throw new FolderError('Path escapes the profile folder.', 403)

@@ -28,12 +28,12 @@ describe('access code (client)', () => {
 
   it('renders the unlock screen and the settings states', () => {
     const lock = renderToStaticMarkup(<LockScreen status={status} onUnlocked={() => undefined}/>)
-    expect(lock).toContain('Enter access code')
-    expect(lock).toContain('Remember this device for 7 days')
+    expect(lock).toContain('Masukkan kode akses')
+    expect(lock).toContain('Ingat perangkat ini selama 7 hari')
     expect(lock).toContain('ruang access-code off')
-    expect(renderToStaticMarkup(<Settings access={{ ...status, enabled: false, unlocked: true }} onAccessChange={() => undefined}/>)).toContain('Set up access code')
+    expect(renderToStaticMarkup(<Settings access={{ ...status, enabled: false, unlocked: true }} onAccessChange={() => undefined}/>)).toContain('Siapkan kode akses')
     const on = renderToStaticMarkup(<Settings access={{ ...status, unlocked: true, since: '2026-10-01T00:00:00Z' }} onAccessChange={() => undefined}/>)
-    expect(on).toContain('Change code')
-    expect(on).toContain('LOCK THIS BROWSER')
+    expect(on).toContain('Ganti kode')
+    expect(on).toContain('KUNCI PERAMBAN INI')
   })
 })

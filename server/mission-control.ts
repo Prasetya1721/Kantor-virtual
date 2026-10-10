@@ -636,7 +636,7 @@ export async function collectUsage(days: number, profiles: readonly string[], ru
   const names = profiles.filter((name) => PROFILE_NAME.test(name))
   const agents = await mapLimit(names.length > 0 ? names : ['default'], USAGE_CONCURRENCY, async (agent): Promise<AgentUsage> => {
     const result = await read<UsageInsights | null>(run, 'hermes', [...(names.length > 0 ? ['-p', agent] : []), 'insights', '--days', String(days)], (output) => parseInsights(output, days), null)
-    return result.availability === 'available' && result.data ? { agent, availability: 'available', usage: result.data } : { agent, availability: 'unavailable', error: result.error?.message ?? 'hermes insights could not be read.' }
+    return result.availability === 'available' && result.data ? { agent, availability: 'available', usage: result.data } : { agent, availability: 'unavailable', error: result.error?.message ?? 'hermes insights tidak dapat dibaca.' }
   })
   const readable = agents.flatMap((agent) => (agent.usage ? [agent.usage] : []))
   const sum = (field: 'sessions' | 'messages' | 'toolCalls' | 'inputTokens' | 'outputTokens' | 'totalTokens') => readable.reduce((total, usage) => total + usage[field], 0)
@@ -653,9 +653,9 @@ export async function collectUsage(days: number, profiles: readonly string[], ru
 }
 
 export const LOG_FILES = [
-  { name: 'agent', label: 'Agent' },
+  { name: 'agent', label: 'Agen' },
   { name: 'gateway', label: 'Gateway' },
-  { name: 'errors', label: 'Errors' },
+  { name: 'errors', label: 'Error' },
 ] as const
 
 const LOG_MISSING = /Log file not found/i
@@ -783,10 +783,10 @@ const ACTIVITY_CONCURRENCY = 4
 const LOG_RECORD = /^(\d{4}-\d{2}-\d{2}[ T][\d:,.]+)\s+[A-Z]+(?:\s+\[[^\]]*\])?\s+([\w.]+):\s?(.*)$/
 const CHAT_MESSAGE = /\b(message|reply|replied|respond|inbound|outbound|received|sending|sent|chat)\b/i
 const ACTIVITY_LABELS: Record<ActivityKind, string> = {
-  chat: 'Replying to a chat',
-  cron: 'Running a scheduled job',
-  tools: 'Using tools',
-  thinking: 'Working on a request',
+  chat: 'Membalas chat',
+  cron: 'Menjalankan tugas terjadwal',
+  tools: 'Memakai alat',
+  thinking: 'Mengerjakan permintaan',
 }
 
 function loggerKind(name: string, message: string): ActivityKind | 'gateway' | undefined {

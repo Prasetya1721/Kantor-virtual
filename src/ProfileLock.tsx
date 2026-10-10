@@ -19,26 +19,26 @@ export function ProfileUnlock({ agent, minutes = 15, compact = false }: { agent:
   const [error, setError] = useState<string>()
   const submit = async (event: FormEvent) => {
     event.preventDefault()
-    if (pin.length !== 6) { setError('Enter the 6-digit PIN.'); return }
+    if (pin.length !== 6) { setError('Masukkan PIN 6 digit.'); return }
     setBusy(true)
     setError(undefined)
     const result = await profileLockRequest('unlock', { agent, pin })
     setBusy(false)
     if (!result.ok) { setError(result.message); setPin('') }
   }
-  return <form className={`profile-unlock${compact ? ' compact' : ''}`} onSubmit={submit} aria-label={`Unlock ${agent}`}>
+  return <form className={`profile-unlock${compact ? ' compact' : ''}`} onSubmit={submit} aria-label={`Buka kunci ${agent}`}>
     <p className="profile-unlock-icon" aria-hidden="true">🔒</p>
-    <h3>{agent} is locked</h3>
-    <p className="muted">Its memory, files, tasks and activity are private. Enter the PIN to open them in this browser for {minutes} minutes.</p>
+    <h3>{agent} terkunci</h3>
+    <p className="muted">Memori, berkas, tugas, dan aktivitasnya privat. Masukkan PIN untuk membukanya di peramban ini selama {minutes} menit.</p>
     <PinInput id={`pin-${agent}`} value={pin} onChange={setPin} autoFocus label="PIN"/>
     {error && <p className="form-error" role="alert">{error}</p>}
-    <button type="submit" className="primary-button" disabled={busy || pin.length !== 6}>{busy ? 'Checking…' : 'Unlock'}</button>
+    <button type="submit" className="primary-button" disabled={busy || pin.length !== 6}>{busy ? 'Memeriksa…' : 'Buka kunci'}</button>
   </form>
 }
 
 /** Bar shown above an unlocked agent's private data, to lock it again. */
 export function RelockBar({ agent, minutes }: { agent: string; minutes: number }) {
-  return <div className="relock-bar"><span>🔓 {agent} is unlocked in this browser (up to {minutes} min).</span><button type="button" className="refresh-button" onClick={() => void profileLockRequest('lock', { agent })}>🔒 LOCK AGAIN</button></div>
+  return <div className="relock-bar"><span>🔓 {agent} terbuka di peramban ini (maksimal {minutes} mnt).</span><button type="button" className="refresh-button" onClick={() => void profileLockRequest('lock', { agent })}>🔒 KUNCI LAGI</button></div>
 }
 
 /**

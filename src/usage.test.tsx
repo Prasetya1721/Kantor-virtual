@@ -15,8 +15,8 @@ describe('token usage view', () => {
 
   it('offers the three periods and starts by loading every agent', () => {
     const markup = renderToStaticMarkup(<TokenUsage/>)
-    expect(markup).toContain('TOKEN USAGE · LAST 7 DAYS')
+    expect(markup).toContain('PEMAKAIAN TOKEN · 7 HARI TERAKHIR')
     for (const label of ['24H', '7D', '30D']) expect(markup).toContain(`>${label}<`)
-    expect(markup).toContain('Reading hermes insights for every agent')
+    expect(markup).toContain('Membaca hermes insights untuk setiap agen')
   })
 })

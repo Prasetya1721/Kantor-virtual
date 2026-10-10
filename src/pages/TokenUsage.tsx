@@ -31,36 +31,36 @@ export function TokenUsage({ initialDays = 7 }: { initialDays?: Period }) {
   const totals = data?.totals
   const agentRows: Row[] = (data?.agents ?? []).map((agent) => agent.usage
     ? { key: agent.agent, label: agent.agent, value: agent.usage.totalTokens, muted: agent.usage.totalTokens === 0,
-      detail: `${agent.agent}: ${formatNumber(agent.usage.totalTokens)} tokens (${formatNumber(agent.usage.inputTokens)} in / ${formatNumber(agent.usage.outputTokens)} out) · ${formatNumber(agent.usage.sessions)} sessions · est. ${formatCost(agent.usage.costUsd)}${agent.usage.topSession ? ` · biggest session ${formatNumber(agent.usage.topSession.tokens)} tokens (${agent.usage.topSession.date})` : ''}` }
-    : { key: agent.agent, label: agent.agent, value: 0, muted: true, note: 'Not Available', detail: `${agent.agent}: ${agent.error ?? 'hermes insights could not be read.'}` })
+      detail: `${agent.agent}: ${formatNumber(agent.usage.totalTokens)} token (${formatNumber(agent.usage.inputTokens)} masuk / ${formatNumber(agent.usage.outputTokens)} keluar) · ${formatNumber(agent.usage.sessions)} sesi · est. ${formatCost(agent.usage.costUsd)}${agent.usage.topSession ? ` · sesi terbesar ${formatNumber(agent.usage.topSession.tokens)} token (${agent.usage.topSession.date})` : ''}` }
+    : { key: agent.agent, label: agent.agent, value: 0, muted: true, note: 'Tidak Tersedia', detail: `${agent.agent}: ${agent.error ?? 'hermes insights tidak dapat dibaca.'}` })
   const sourceTotal = (data?.sources ?? []).reduce((sum, source) => sum + source.tokens, 0)
   const modelTotal = (data?.models ?? []).reduce((sum, model) => sum + model.tokens, 0)
   const top = data?.agents.find((agent) => (agent.usage?.totalTokens ?? 0) > 0)
 
   return <article className="card usage-card">
     <div className="usage-head">
-      <p className="eyebrow">TOKEN USAGE · LAST {days === 1 ? '24 HOURS' : `${days} DAYS`}</p>
-      <div className="period-toggle" role="group" aria-label="Period">{USAGE_PERIODS.map((period) => <button type="button" key={period} aria-pressed={days === period} className={days === period ? 'active' : ''} onClick={() => setDays(period)}>{period === 1 ? '24H' : `${period}D`}</button>)}</div>
+      <p className="eyebrow">PEMAKAIAN TOKEN · {days === 1 ? '24 JAM TERAKHIR' : `${days} HARI TERAKHIR`}</p>
+      <div className="period-toggle" role="group" aria-label="Periode">{USAGE_PERIODS.map((period) => <button type="button" key={period} aria-pressed={days === period} className={days === period ? 'active' : ''} onClick={() => setDays(period)}>{period === 1 ? '24H' : `${period}D`}</button>)}</div>
     </div>
-    {usage.status === 'pending' && <p className="muted">Reading hermes insights for every agent…</p>}
-    {usage.status === 'failed' && <p className="muted">Not Available — {usage.message}</p>}
+    {usage.status === 'pending' && <p className="muted">Membaca hermes insights untuk setiap agen…</p>}
+    {usage.status === 'failed' && <p className="muted">Tidak Tersedia — {usage.message}</p>}
     {data && totals && <>
       <dl className="metric-grid">
-        <div><dt>Total tokens</dt><dd>{formatCompact(totals.totalTokens)}</dd></div>
-        <div><dt>Input / output</dt><dd>{formatCompact(totals.inputTokens)} / {formatCompact(totals.outputTokens)}</dd></div>
-        <div><dt>Est. cost</dt><dd>{formatCost(totals.costUsd)}</dd></div>
-        <div><dt>Sessions</dt><dd>{formatNumber(totals.sessions)}</dd></div>
-        <div><dt>Messages</dt><dd>{formatNumber(totals.messages)}</dd></div>
-        <div><dt>Tool calls</dt><dd>{formatNumber(totals.toolCalls)}</dd></div>
+        <div><dt>Total token</dt><dd>{formatCompact(totals.totalTokens)}</dd></div>
+        <div><dt>Masuk / keluar</dt><dd>{formatCompact(totals.inputTokens)} / {formatCompact(totals.outputTokens)}</dd></div>
+        <div><dt>Estimasi biaya</dt><dd>{formatCost(totals.costUsd)}</dd></div>
+        <div><dt>Sesi</dt><dd>{formatNumber(totals.sessions)}</dd></div>
+        <div><dt>Pesan</dt><dd>{formatNumber(totals.messages)}</dd></div>
+        <div><dt>Panggilan alat</dt><dd>{formatNumber(totals.toolCalls)}</dd></div>
       </dl>
-      {top?.usage && <p className="card-note">Top consumer: <b>{top.agent}</b> · {formatCompact(top.usage.totalTokens)} tokens · {share(top.usage.totalTokens, totals.totalTokens)} of all</p>}
-      {totals.totalTokens === 0 && agentRows.every((row) => !row.note) ? <p className="muted">No sessions in this period.</p> : <div className="usage-sections">
-        <section><h3>By agent</h3><BarRows label="Tokens by agent" rows={agentRows} total={totals.totalTokens}/></section>
-        {data.sources.length > 0 && <section><h3>By kind of work</h3><BarRows label="Tokens by kind of work" total={sourceTotal} rows={data.sources.map((source) => ({ key: source.source, label: sourceLabel(source.source), value: source.tokens, detail: `${sourceLabel(source.source)}: ${formatNumber(source.tokens)} tokens · ${formatNumber(source.sessions)} sessions` }))}/></section>}
-        {data.models.length > 0 && <section><h3>By model</h3><BarRows label="Tokens by model" total={modelTotal} rows={data.models.slice(0, 6).map((model) => ({ key: model.model, label: model.model, value: model.tokens, detail: `${model.model}: ${formatNumber(model.tokens)} tokens · ${formatNumber(model.sessions)} sessions` }))}/></section>}
-        {data.tools.length > 0 && <section><h3>Top tools</h3><BarRows label="Tool calls" unit="calls" total={0} rows={data.tools.slice(0, 5).map((tool) => ({ key: tool.tool, label: tool.tool, value: tool.calls, detail: `${tool.tool}: ${formatNumber(tool.calls)} calls` }))}/></section>}
+      {top?.usage && <p className="card-note">Pemakai terbesar: <b>{top.agent}</b> · {formatCompact(top.usage.totalTokens)} token · {share(top.usage.totalTokens, totals.totalTokens)} dari total</p>}
+      {totals.totalTokens === 0 && agentRows.every((row) => !row.note) ? <p className="muted">Tidak ada sesi di periode ini.</p> : <div className="usage-sections">
+        <section><h3>Per agen</h3><BarRows label="Token per agen" rows={agentRows} total={totals.totalTokens}/></section>
+        {data.sources.length > 0 && <section><h3>Per jenis pekerjaan</h3><BarRows label="Token per jenis pekerjaan" total={sourceTotal} rows={data.sources.map((source) => ({ key: source.source, label: sourceLabel(source.source), value: source.tokens, detail: `${sourceLabel(source.source)}: ${formatNumber(source.tokens)} token · ${formatNumber(source.sessions)} sesi` }))}/></section>}
+        {data.models.length > 0 && <section><h3>Per model</h3><BarRows label="Token per model" total={modelTotal} rows={data.models.slice(0, 6).map((model) => ({ key: model.model, label: model.model, value: model.tokens, detail: `${model.model}: ${formatNumber(model.tokens)} token · ${formatNumber(model.sessions)} sesi` }))}/></section>}
+        {data.tools.length > 0 && <section><h3>Alat teratas</h3><BarRows label="Panggilan alat" unit="calls" total={0} rows={data.tools.slice(0, 5).map((tool) => ({ key: tool.tool, label: tool.tool, value: tool.calls, detail: `${tool.tool}: ${formatNumber(tool.calls)} panggilan` }))}/></section>}
       </div>}
-      <p className="card-note">From <code>hermes -p &lt;profile&gt; insights</code> for every agent. By kind of work and by model include cache tokens, so they can add up to more than the total. Hover a bar for exact numbers.</p>
+      <p className="card-note">Dari <code>hermes -p &lt;profile&gt; insights</code> untuk setiap agen. Per jenis pekerjaan dan per model mencakup token cache, jadi jumlahnya bisa melebihi total. Arahkan kursor ke bilah untuk angka tepatnya.</p>
     </>}
   </article>
 }

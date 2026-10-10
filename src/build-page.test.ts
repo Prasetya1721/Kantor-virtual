@@ -19,8 +19,8 @@ describe('Build page', () => {
 
   it('shows the empty state instead of pretending activity exists', () => {
     const buildSource = readFileSync(new URL('./pages/Build.tsx', import.meta.url), 'utf8')
-    expect(buildSource).toContain('No recent build sessions')
-    expect(buildSource).toContain('Not Available')
+    expect(buildSource).toContain('Belum ada sesi build')
+    expect(buildSource).toContain('Tidak Tersedia')
   })
 })
 

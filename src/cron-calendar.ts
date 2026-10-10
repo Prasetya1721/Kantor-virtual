@@ -77,7 +77,7 @@ export function monthEntries(jobs: ScheduledJob[], year: number, month: number, 
       if (cron) {
         if (!cronRunsOn(cron, year, month, day)) continue
         const count = cron.hours.length * cron.minutes.length
-        add(key, count > 3 ? { ...tag, job: job.name, kind: 'interval', label: `${count}× a day` } : { ...tag, job: job.name, kind: 'run', label: cron.hours.flatMap((hour) => cron.minutes.map((minute) => `${pad(hour)}:${pad(minute)}`)).join(', ') })
+        add(key, count > 3 ? { ...tag, job: job.name, kind: 'interval', label: `${count}× sehari` } : { ...tag, job: job.name, kind: 'run', label: cron.hours.flatMap((hour) => cron.minutes.map((minute) => `${pad(hour)}:${pad(minute)}`)).join(', ') })
       } else if (interval) {
         const amount = Number(interval[1])
         const unit = interval[2].toLowerCase()

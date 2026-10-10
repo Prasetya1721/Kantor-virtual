@@ -92,7 +92,7 @@ async function openFolder(profile: string) {
   const folders = await agentFolders()
   const folder = folders.find((item) => item.profile === profile)
   if (!folder) throw new FolderError('Unknown agent.', 404)
-  if (!folder.available) throw new FolderError(folder.reason ?? 'Folder not available.', 404)
+  if (!folder.available) throw new FolderError(folder.reason ?? 'Folder tidak tersedia.', 404)
   return { folder, excluded: excludedFor(folder, folders) }
 }
 function folderRoute(handler: (request: Request) => Promise<unknown>) {

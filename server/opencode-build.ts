@@ -90,7 +90,7 @@ conn.close()
       version: 'read',
       sessions: [],
       totalSessions: 0,
-      error: { code: 'READ_FAILED', message: error instanceof Error ? 'OpenCode build data could not be read.' : 'OpenCode build data could not be read.' },
+      error: { code: 'READ_FAILED', message: error instanceof Error ? 'Data build OpenCode tidak dapat dibaca.' : 'Data build OpenCode tidak dapat dibaca.' },
       fetchedAt,
     }
   }
