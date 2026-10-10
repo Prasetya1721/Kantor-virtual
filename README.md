@@ -1,248 +1,269 @@
-# Ruang · Hermes 3D Virtual Office
+# Kantor Virtual · Ruang — Kantor 3D & Mission Control Hermes
 
-*Ruang* is Indonesian for "room" or "space". It is a 3D virtual office and read-only mission control for your local [Hermes Agent](https://hermes-agent.nousresearch.com) and OpenCode crew. See who is working and what they are doing, plus the Kanban board, cron jobs, sessions, memory, folders and logs, all in one place. Everything is read through the `hermes` CLI, and nothing is ever changed.
+*Ruang* adalah kantor virtual 3D sekaligus mission control **hanya-baca** untuk kru [Hermes Agent](https://hermes-agent.nousresearch.com) dan OpenCode di mesin lokal. Lihat siapa yang bekerja dan apa yang dikerjakannya, plus papan Kanban, cron, sesi, memori, folder, dan log — semuanya di satu tempat. Semua dibaca lewat CLI `hermes`, dan tidak ada yang pernah diubah.
 
-![The 3D office: an agent at work at its desk, and idle agents playing ping-pong and console games in the game room](docs/screenshots/office.png)
+![Kantor 3D: seorang agen bekerja di mejanya, agen santai bermain ping-pong dan konsol di ruang game](docs/screenshots/office.png)
 
-![Mission control statistics in the evening theme](docs/screenshots/mission-control.png)
+![Statistik mission control dalam tema malam](docs/screenshots/mission-control.png)
 
-## Install
+> **Tentang repo ini.** Ini fork kerja dari [yugienugraha/ruang](https://github.com/yugienugraha/ruang), dipakai untuk AI Team Kantor Virtual Prasetya. Perbedaannya dari upstream: antarmuka sudah diterjemahkan ke bahasa Indonesia (menu, judul halaman, label, pesan kosong, pesan galat) sementara id internal, slug URL, dan kontrak API tetap Inggris supaya tautan lama dan tes tetap stabil. Sinkronisasi dengan upstream dilakukan lewat `git remote upstream`.
 
-Works on macOS, Linux and Windows through WSL2. You need the Hermes Agent CLI (`hermes`) installed; `opencode` is optional. The installer downloads its own Node.js if you do not have Node.js 20 or newer.
+## Status repo ini
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/yugienugraha/ruang/main/install.sh | bash
-```
+| | |
+|---|---|
+| **Versi** | 0.2.0 |
+| **Bahasa antarmuka** | Indonesia (label, pesan, dan judul halaman) |
+| **Basis** | fork dari `yugienugraha/ruang`, riwayat upstream ada di remote `upstream` |
+| **Rilis/tag** | belum ada; jalankan dari checkout (lihat *Instalasi*) |
+| **Pemeriksaan** | `npm run lint`, `npm test`, `npm run build` |
 
-Then start it and open http://127.0.0.1:3001:
+## Prasyarat
 
-```bash
-ruang                        # or: ruang --port 3005
-```
+- Node.js 20 atau lebih baru
+- `hermes` tersedia di `PATH` shell yang menjalankan server
+- `opencode` opsional; kalau terpasang, ia muncul sebagai agen
 
-- **Run it in the background, and at boot (Linux):** add `--service` to install a systemd user service:
-  `curl -fsSL https://raw.githubusercontent.com/yugienugraha/ruang/main/install.sh | bash -s -- --service`
-  To keep it running after you log out, also run `loginctl enable-linger $USER`.
-- **Update:** run the install command again.
-- **Remove:** add `--uninstall` (`... | bash -s -- --uninstall`).
-- **Other options:** `--version v0.2.0` installs a specific release; `--from-source` builds the latest `main` (needs `git`). See `install.sh --help`.
-- **On a server:** Ruang listens on `127.0.0.1` only. From your laptop, run `ssh -L 3001:127.0.0.1:3001 user@server`, then open http://127.0.0.1:3001.
+## Instalasi
 
-Everything goes into `~/.local/share/ruang`, plus the `ruang` command in `~/.local/bin`. Installs made under the project's earlier names (`mission-control`, `majujaya`) are cleaned up automatically. No sudo is used and nothing is installed system-wide. Prefer to read the script before running it? `curl -fsSL https://raw.githubusercontent.com/yugienugraha/ruang/main/install.sh -o install.sh`, read it, then `bash install.sh`.
-
-**With your own Node.js 20+:** download `ruang.tgz` from the [latest release](https://github.com/yugienugraha/ruang/releases/latest) and run `npm install -g ./ruang.tgz`. Once the package is on npm this becomes `npm install -g ruang` (or `npx ruang`).
-
-## Development
-
-Requires Node.js 20+ and `hermes` on the `PATH` of the shell that starts the server.
+Dari checkout (cara yang berlaku untuk fork ini):
 
 ```bash
-git clone https://github.com/yugienugraha/ruang.git
-cd ruang
+git clone https://github.com/Prasetya1721/Kantor-virtual.git
+cd Kantor-virtual
 npm install
-npm run dev        # API on 127.0.0.1:3001 + Vite UI (open the URL Vite prints, usually http://localhost:5173)
+npm run build      # UI ke dist/, server ke build/server/
+npm start          # buka http://127.0.0.1:3001
 ```
 
-Production from a checkout (single process, serves the built UI and the API):
+Server hanya mengikat `127.0.0.1`. Kalau dijalankan di server terpisah, dari laptop jalankan `ssh -L 3001:127.0.0.1:3001 user@server`, lalu buka http://127.0.0.1:3001.
+
+Mau menjalankannya sebagai layanan latar belakang? `install.sh` di repo ini mendukung `--tarball <path>` (memasang paket `.tgz` lokal) dan `--from-source`:
 
 ```bash
-npm run build      # builds the UI into dist/ and the server into build/server/
-npm start          # open http://127.0.0.1:3001
+npm pack                                        # menghasilkan ruang-0.2.0.tgz
+bash install.sh --tarball ruang-0.2.0.tgz       # pasang ke ~/.local/share/ruang
+bash install.sh --tarball ruang-0.2.0.tgz --service   # plus systemd user service
 ```
 
-Checks: `npm run lint`, `npm test`, `npm run build`.
+Skrip itu memasang ke `~/.local/share/ruang` dan perintah `ruang` ke `~/.local/bin`, tanpa `sudo`. Kalau Node.js 20+ tidak ditemukan, ia mengunduh Node.js privat untuk Ruang saja. Untuk opsi lain jalankan `install.sh --help`.
 
-**After pulling new code** run `npm install && npm run build` and restart `npm start` (a running `npm start` keeps serving the old API; `npm run dev` restarts the API by itself). The UI checks `/api/health` and shows a *Restart needed* banner when the server is older than the page. Set `RUANG_PORT` (or pass `--port`) to change the port. The server binds to `127.0.0.1` only. The older `MISSION_CONTROL_*` settings still work.
+> **Catatan.** Skrip `install.sh` masih memuat `REPO="yugienugraha/ruang"` sebagai sumber rilis bawaan, jadi tanpa `--tarball` ia akan memasang upstream, bukan fork ini. Ubah variabel `REPO` di `install.sh` kalau ingin alur rilis fork ini.
 
-**Releasing:** bump the version and push the tag, for example `npm version 0.2.1 && git push origin main --follow-tags`. The *Release* workflow then lints, tests, builds and attaches `ruang.tgz` to a GitHub release, which the installer picks up. To also publish to npm, add an `NPM_TOKEN` repository secret.
-
-## Pages
-
-- **Agents**: every agent on this machine, with model, gateway state and what it is doing in the office. Agents are discovered, not configured: every Hermes profile from `hermes profile list` is an agent, plus OpenCode when it is installed. New profiles appear automatically, and each agent gets its own character colours derived from its name.
-- **Office** (home page): the office fills the screen below the header. A HUD across the top shows crew active, gateways running, running/open tasks, the next cron run and (when any) failed CLI reads; chips link to their page. The **Panel** button opens one side panel with three tabs: **Crew** (crew snapshot and a clickable list of stations), **Stats** (statistics across every source, token usage, the Kanban status breakdown, runtime and what is up next; tiles link to their pages) and **Activity** (unattributed session metadata and messaging channels). The **Tasks**, **Calendar** and **Tokens** buttons open the Task Board, a month calendar of cron runs or token usage over the office, without leaving it (Esc or ✕ closes them; *Open full page* goes to the page). `#/dashboard` opens the Office.
-
-  The view switches between **3D** (the default) and **2D**, remembered per browser; browsers without WebGL stay on 2D. The 3D view (three.js via React Three Fiber, loaded only when used) is an office of several rooms with an Indonesian touch:
-  - the workspace: hot desking, with one unlabeled desk per agent in two rows (the building widens for a larger crew), and a meeting table with gorengan (fried snacks) on it
-  - a lounge behind a glass partition, where the sofa faces a TV on the back wall
-  - a game room through a door from the lounge: ping-pong, two arcade machines, a console corner with beanbags, and a karambol (carrom) board
-  - a pantry with a galon (water-jug) dispenser
-  - split ACs on the walls (outdoor units behind the building) and suspended cool-white LED office lights
-  - the Merah Putih flag at the corner of the grounds
-  - in the alley beside the building, out of the main view: a bakso (meatball soup) cart and a kopi keliling (coffee bike), each with its vendor
-
-  It follows the theme: day in light mode, evening in dark mode, when the office lights, street lamps and cart lamps light up. Only procedural textures are used, with no image or model files. Drag to rotate, scroll to zoom, and pan with right-drag, two fingers, the arrow keys, or the **Geser** button (which makes a plain drag pan). Panning stays within the grounds, and **Reset view** returns to the starting view.
-
-  The building has two floors; the buttons at the top left of the 3D view (or Page Up / Page Down) switch between them, each showing how many agents are on it. **Lantai 1** is the office. **Lantai 2**, up the stairs by the entrance, has a dorm bedroom with one bed per agent, a lesehan corner, a bathroom, and a ruko-style balcony with rattan chairs, a hammock, a clothes line and string lights; the lower floor turns into a closed building below it, and agents outside on the ground stay in view. Idle agents also go upstairs to sleep, nap in the hammock or sit on the balcony; the **💤 Tidur** button sends every idle agent to bed (remembered per browser, like the floor). Sleeping is decorative only, like the rest of the idle wandering.
-  Each agent has its own desk. An agent replying to a chat walks to the meeting table; one running a cron job, tools or a Kanban task sits at its desk with a speech bubble saying what it is doing. Agents walk along the aisle and use the entrance, never through furniture or walls. Idle agents do not just sit: every 32 seconds each one moves on to another stop, such as relaxing in the lounge, ping-pong, arcade games or the console in the game room, getting water from the galon, the kitchen, bakso on the cart's stools, coffee at the bike, or a stroll to the flag or the bookshelf. A dashed bubble says where they are. This wandering is decorative only (the same clock-based route for everyone), and the Idle state itself comes from the server. Click an agent for its detail dialog, with three tabs: **Overview** (state, task, provenance, freshness), **Folder** (that agent's own folder, read-only, as on the Folders page) and **Memory** (its SOUL.md, MEMORY.md, USER.md and context files).
-- **Task Board**: Hermes Kanban in board order (triage → todo → scheduled → ready → running → blocked → review → done) with search, assignee filter and priority. Tasks from every Kanban board are shown (not only the current one), with a board filter when there is more than one. Each column is at most as tall as the screen and scrolls on its own, so the board's sideways scrollbar stays in view; the strip above the board scrolls it (‹ ›) or jumps to a column by its status chip. Click a card for its full detail from `hermes kanban show <id> --json`: description, result or latest summary, workspace, branch, skills, model, timestamps, dependencies (clickable), runs, comments and activity. Free text is secret-redacted; only ids on the board snapshot can be opened.
-- **Calendar**: a month calendar of the cron runs of every agent (each job is labelled with its agent, and the calendar can be filtered by agent) (upcoming runs from today, repeating jobs, overdue runs and last-run outcomes, read from 5-field cron expressions and `every …` intervals, in the Hermes host's local time), plus the list of jobs with status, next run, overdue and last-run outcome. Paused jobs only show their last run.
-- **Activity**: the 20 most recent sessions with search.
-- **Memory**: per agent, what it carries into every session (following the Hermes memory and context-file docs):
-  - `SOUL.md` (identity, system-prompt slot #1)
-  - `memories/MEMORY.md` (agent notes) and `memories/USER.md` (user profile), split into their `§` entries, with a usage bar against the configured limit (defaults 2,200 / 1,375 chars from `memory.*` in `config.yaml`) and a warning above 80%
-  - context files present in the profile (`HERMES.md`, `.hermes.md`, `AGENTS.override.md`, `AGENTS.md`, `CLAUDE.md`, `.cursorrules`)
-  - the memory settings (enabled stores, `write_approval`, external provider)
-
-  OpenCode shows its global `AGENTS.md`/`CLAUDE.md`. Entries are searchable. Everything is read through the Folders safety layer, so it is read-only, confined to the agent's folder and secret-redacted. `#/knowledge` opens this page.
-- **Folders**: one folder per agent, and only that agent's folder: a Hermes profile `<name>` → `~/.hermes/profiles/<name>`, OpenCode → `~/.opencode`. Browse sub-folders and view files read-only. See *Folders* below.
-- **Logs**: tails of `hermes logs agent|gateway|errors` with level filter, search and follow mode, plus an audit of every command the server ran (the *Command audit* tab).
-- **Settings**: the optional access code and profile lock. See *Access code* and *Profile lock* below.
-
-**Token usage** (the **Usage** page in the menu, the **◔ Tokens** button in the Office, and the Panel's Stats tab) adds up `hermes insights` of every agent, because Hermes keeps sessions per profile. Pick 24 hours, 7 days or 30 days to see:
-- total tokens, input/output, estimated cost, sessions, messages and tool calls for the whole crew, plus the top consumer
-- **By agent**: every agent ranked by tokens with its share of the total; hover for input/output, sessions, cost and its biggest session
-- **By kind of work**: tokens per session source, such as Kanban tasks, cron jobs, Telegram or the terminal
-- **By model** and **Top tools**, across all agents
-
-The agent dialog in the Office shows that agent's tokens over 7 days and its rank. Per-source and per-model counts include cache tokens, so they can add up to more than the total. An agent whose insights cannot be read shows as *Not Available* while the others still count. Tokens per Kanban task are not available: Hermes does not record them per task.
-
-Navigation is a drawer, closed by default like a game menu: open it with the ☰ button or the **M** key, and close it with Esc, a click outside, or by choosing a page. A dot on ☰ flags failed CLI reads or stopped gateways. The header has one light/dark theme toggle (remembered per browser) and Refresh. All pages poll automatically, keep the last good data (marked stale) if a refresh fails, and have a manual refresh. "Refresh all" bypasses the 10-second server cache for anything older than 2 seconds. Pages are addressable by URL hash (for example `#/task-board`).
-
-## Access code
-
-Off by default. Turn it on in **Settings → Access code** to ask for a code every time Ruang is opened in a browser. It works like an API key rather than a username and password:
-
-1. Choose **Generate** (a random code such as `ruang-7KQ4-M2XD-9PWT-H6RA`) or **Custom** (at least 12 characters, typed twice).
-2. **Download .txt** or **Copy** it. The code is only shown while you set it, and Ruang has no password reset, so the downloaded file is your backup.
-3. Tick *I have saved this code*, optionally *Remember this device for 7 days*, and turn it on.
-
-Every browser then shows an unlock screen first. Without *Remember*, a session ends when the browser closes (and after 12 hours at most). **Change code** and **Turn off** need the current code; changing or removing it signs out every browser. **Lock this browser** ends the current session.
-
-Lost the code? On the machine that runs Ruang:
+## Pengembangan
 
 ```bash
-ruang access-code off      # remove it, then set a new one in Settings
-ruang access-code new      # or print a new random code
+npm install
+npm run dev        # API di 127.0.0.1:3001 + Vite UI (buka URL yang dicetak Vite, biasanya http://localhost:5173)
+```
+
+Produksi dari checkout (satu proses, menyajikan UI hasil build dan API):
+
+```bash
+npm run build
+npm start          # buka http://127.0.0.1:3001
+```
+
+**Setelah menarik kode baru** jalankan `npm install && npm run build` lalu mulai ulang `npm start` (`npm start` yang sedang jalan tetap menyajikan API lama; `npm run dev` restart sendiri). UI memeriksa `/api/health` dan menampilkan banner *Perlu mulai ulang* saat server lebih lama daripada halaman. Setel `RUANG_PORT` (atau pakai `--port`) untuk mengganti port. Pengaturan lama `MISSION_CONTROL_*` masih berfungsi.
+
+## Halaman
+
+Navigasi berupa drawer, tertutup secara bawaan seperti menu game: buka dengan tombol ☰ atau tombol **M**, tutup dengan Esc, klik di luar, atau dengan memilih halaman. Titik pada ☰ menandai pembacaan CLI yang gagal atau gateway yang berhenti. Header punya satu tombol tema terang/gelap (diingat per peramban) dan tombol segarkan. Semua halaman melakukan polling otomatis, menyimpan data terakhir yang baik (ditandai *Basi* kalau penyegaran gagal), dan punya tombol segarkan manual. "Segarkan semua" melewati cache server 10 detik untuk apa pun yang lebih tua dari 2 detik. Halaman bisa diakses lewat hash URL (misalnya `#/task-board`; slug tetap Inggris supaya tautan lama tidak putus).
+
+- **Kantor** (halaman utama): kantor memenuhi layar di bawah header. HUD di bagian atas menampilkan kru aktif, gateway berjalan, tugas berjalan/terbuka, cron berikutnya, dan (kalau ada) pembacaan CLI yang gagal; tiap chip menautkan ke halamannya. Tombol **Panel** membuka satu panel samping dengan tiga tab: **Kru** (ringkasan kru dan daftar stasiun yang bisa diklik), **Statistik** (statistik dari setiap sumber, pemakaian token, rincian status Kanban, runtime, dan agenda berikutnya; tile menautkan ke halamannya), dan **Aktivitas** (metadata sesi tanpa atribusi dan kanal pesan). Tombol **Tugas**, **Kalender**, dan **Token** membuka Papan Tugas, kalender bulan cron, atau pemakaian token di atas kantor tanpa meninggalkannya (Esc atau ✕ menutupnya; *Buka halaman penuh* menuju halamannya). `#/dashboard` membuka Kantor.
+
+  Tampilan bisa berganti antara **3D** (bawaan) dan **2D**, diingat per peramban; peramban tanpa WebGL tetap di 2D. Tampilan 3D (three.js lewat React Three Fiber, hanya diunduh saat dipakai) adalah kantor beberapa ruangan dengan sentuhan Indonesia:
+  - ruang kerja: meja bersama, satu meja tanpa label per agen dalam dua baris (gedung melebar untuk kru yang lebih besar), dan meja rapat dengan gorengan di atasnya
+  - ruang santai di balik partisi kaca, sofanya menghadap TV di dinding belakang
+  - ruang game lewat pintu dari ruang santai: ping-pong, dua mesin arcade, sudut konsol dengan beanbag, dan papan karambol
+  - pantry dengan dispenser galon
+  - AC split di dinding (unit luar di belakang gedung) dan lampu LED kantor putih sejuk yang digantung
+  - bendera Merah Putih di sudut halaman
+  - di gang samping gedung, di luar pandangan utama: gerobak bakso dan kopi keliling, masing-masing dengan penjualnya
+
+  Semua mengikuti tema: siang di mode terang, malam di mode gelap, saat lampu kantor, lampu jalan, dan lampu gerobak menyala. Hanya tekstur prosedural yang dipakai, tanpa berkas gambar atau model. Geser untuk memutar, gulir untuk zoom, dan geser tampilan dengan klik kanan, dua jari, tombol panah, atau tombol **Geser** (yang membuat geser biasa memindahkan tampilan). Menggeser tetap di dalam halaman, dan **Atur ulang tampilan** kembali ke tampilan awal.
+
+  Gedung punya dua lantai; tombol di kiri atas tampilan 3D (atau Page Up / Page Down) berpindah lantai, masing-masing menampilkan berapa agen di lantai itu. **Lantai 1** adalah kantor. **Lantai 2**, lewat tangga di dekat pintu masuk, berisi kamar tidur dengan satu tempat tidur per agen, sudut lesehan, kamar mandi, dan balkon gaya ruko dengan kursi rotan, hammock, jemuran, dan lampu hias; lantai bawah tertutup di bawahnya, dan agen di luar gedung tetap terlihat. Agen santai juga naik ke atas untuk tidur, tidur siang di hammock, atau duduk di balkon; tombol **💤 Tidur** mengirim semua agen santai ke tempat tidur (diingat per peramban, seperti lantainya). Tidur hanya dekoratif, sama seperti aktivitas santai lainnya.
+  Setiap agen punya mejanya sendiri. Agen yang membalas chat berjalan ke meja rapat; yang menjalankan cron, alat, atau tugas Kanban duduk di mejanya dengan gelembung bicara yang menyebut apa yang dikerjakannya. Agen berjalan lewat lorong dan memakai pintu masuk, tidak pernah menembus perabot atau dinding. Agen santai tidak hanya duduk: setiap 32 detik masing-masing pindah ke tempat lain, seperti bersantai di ruang santai, ping-pong, arcade, atau konsol di ruang game, mengambil air galon, ke dapur, bakso di kursi gerobak, ngopi di sepeda kopi, atau jalan-jalan ke bendera atau rak buku. Gelembung putus-putus menyebutkan di mana mereka. Aktivitas ini dekoratif saja (rute berbasis jam yang sama untuk semua), dan status Santai sendiri datang dari server. Klik agen untuk dialog detailnya, dengan tiga tab: **Ikhtisar** (status, tugas, asal-usul, kesegaran), **Folder** (folder agen itu sendiri, hanya-baca, seperti di halaman Folder), dan **Memori** (SOUL.md, MEMORY.md, USER.md, dan berkas konteksnya).
+- **Agen**: setiap agen di mesin ini, dengan model, status gateway, dan apa yang dikerjakannya di kantor. Agen ditemukan, bukan dikonfigurasi: setiap profil Hermes dari `hermes profile list` adalah agen, ditambah OpenCode kalau terpasang. Profil baru muncul otomatis, dan setiap agen punya warna karakternya sendiri yang diturunkan dari namanya. Halaman ini juga menampilkan Divisi Engineering: enam peran spesialis (Front-End, Back-End, Full-Stack, UI/UX, Project Manager, QA) yang berjalan sebagai Sub-Agent on-demand, bukan daemon latar belakang, supaya host 2-CPU tetap ringan.
+- **Papan Tugas**: Kanban Hermes dalam urutan papan (triage → todo → scheduled → ready → running → blocked → review → done) dengan pencarian, filter penanggung jawab, dan prioritas. Tugas dari setiap papan Kanban ditampilkan (bukan hanya papan saat ini), dengan filter papan saat papannya lebih dari satu. Setiap kolom setinggi layar dan bergulir sendiri, sehingga bilah gulir samping papan tetap terlihat; strip di atas papan menggesernya (‹ ›) atau melompat ke kolom lewat chip statusnya. Klik kartu untuk detail lengkapnya dari `hermes kanban show <id> --json`: deskripsi, hasil atau ringkasan terbaru, ruang kerja, cabang, keahlian, model, waktu, dependensi (bisa diklik), jalan, komentar, dan aktivitas. Teks bebas disamarkan rahasianya; hanya id yang ada di snapshot papan yang bisa dibuka.
+- **Kalender**: kalender bulan berisi cron setiap agen (tiap tugas dilabeli agennya, dan kalender bisa disaring per agen): jalan mendatang sejak hari ini, tugas berulang, jalan yang terlambat, dan hasil jalan terakhir, dibaca dari ekspresi cron 5-field dan interval `every …`, dalam waktu lokal host Hermes. Di bawahnya ada daftar tugas dengan status, jalan berikutnya, keterlambatan, dan hasil jalan terakhir. Tugas yang dijeda hanya menampilkan jalan terakhirnya.
+- **Aktivitas**: 20 sesi terbaru dengan pencarian.
+- **Memori**: per agen, apa yang dibawanya ke setiap sesi (mengikuti dokumentasi memori dan berkas konteks Hermes):
+  - `SOUL.md` (identitas, slot prompt sistem #1)
+  - `memories/MEMORY.md` (catatan agen) dan `memories/USER.md` (profil pengguna), dipecah per entri `§`, dengan bilah pemakaian terhadap batas yang dikonfigurasi (bawaan 2.200 / 1.375 karakter dari `memory.*` di `config.yaml`) dan peringatan di atas 80%
+  - berkas konteks yang ada di profil (`HERMES.md`, `.hermes.md`, `AGENTS.override.md`, `AGENTS.md`, `CLAUDE.md`, `.cursorrules`)
+  - pengaturan memori (store aktif, `write_approval`, penyedia eksternal)
+
+  OpenCode menampilkan `AGENTS.md`/`CLAUDE.md` globalnya. Entri bisa dicari. Semua dibaca lewat lapisan keamanan Folder, jadi hanya-baca, terbatas di folder agen, dan rahasianya disamarkan. `#/knowledge` membuka halaman ini.
+- **Folder**: satu folder per agen, dan hanya folder agen itu: profil Hermes `<name>` → `~/.hermes/profiles/<name>`, OpenCode → `~/.opencode`. Telusuri sub-folder dan lihat berkas secara hanya-baca. Lihat *Folder* di bawah.
+- **Log**: ekor dari `hermes logs agent|gateway|errors` dengan filter level, pencarian, dan mode ikuti, plus audit setiap perintah yang dijalankan server (tab *Audit perintah*).
+- **Pengaturan**: kode akses opsional dan kunci profil. Lihat *Kode akses* dan *Kunci profil* di bawah.
+
+**Pemakaian token** (halaman **Pemakaian** di menu, tombol **◔ Token** di Kantor, dan tab Statistik di Panel) menjumlahkan `hermes insights` setiap agen, karena Hermes menyimpan sesi per profil. Pilih 24 jam, 7 hari, atau 30 hari untuk melihat:
+- total token, masuk/keluar, estimasi biaya, sesi, pesan, dan panggilan alat untuk seluruh kru, plus pemakai terbesar
+- **Per agen**: setiap agen diurutkan berdasarkan token dengan porsinya dari total; arahkan kursor untuk masuk/keluar, sesi, biaya, dan sesi terbesarnya
+- **Per jenis pekerjaan**: token per sumber sesi, seperti tugas Kanban, cron, Telegram, atau terminal
+- **Per model** dan **Alat teratas**, di semua agen
+
+Dialog agen di Kantor menampilkan token agen itu selama 7 hari dan peringkatnya. Hitungan per sumber dan per model mencakup token cache, jadi bisa melebihi total. Agen yang insights-nya tidak bisa dibaca tampil sebagai *Tidak Tersedia* sementara yang lain tetap dihitung. Token per tugas Kanban tidak tersedia: Hermes tidak mencatatnya per tugas.
+
+## Kode akses
+
+Mati secara bawaan. Nyalakan di **Pengaturan → Kode akses** untuk meminta kode setiap kali Ruang dibuka di peramban. Cara kerjanya seperti API key, bukan nama pengguna dan kata sandi:
+
+1. Pilih **Buat otomatis** (kode acak seperti `ruang-7KQ4-M2XD-9PWT-H6RA`) atau **Kustom** (minimal 12 karakter, diketik dua kali).
+2. **Unduh .txt** atau **Salin**. Kode hanya ditampilkan saat diatur, dan Ruang tidak punya reset kata sandi, jadi berkas yang diunduh adalah cadangannya.
+3. Centang *Saya sudah menyimpan kode ini*, opsional *Ingat perangkat ini selama 7 hari*, lalu aktifkan.
+
+Setiap peramban kemudian menampilkan layar buka kunci lebih dulu. Tanpa *Ingat*, sesi berakhir saat peramban ditutup (dan paling lama 12 jam). **Ganti kode** dan **Matikan** memerlukan kode saat ini; mengganti atau menghapusnya mengeluarkan semua peramban. **Kunci peramban ini** mengakhiri sesi saat ini.
+
+Kode hilang? Di mesin yang menjalankan Ruang:
+
+```bash
+ruang access-code off      # hapus, lalu set kode baru di Pengaturan
+ruang access-code new      # atau cetak kode acak baru
 ruang access-code status
 ```
 
-How it is protected:
-- Only a scrypt hash of the code is stored, with a random secret that signs sessions, in `~/.config/ruang/access.json` (mode `0600`; `RUANG_CONFIG_DIR` or `XDG_CONFIG_HOME` move it). The code itself is never stored, logged or kept in the browser.
-- The server enforces it: while locked, every `/api` route except `/api/health` and the unlock route answers `401`, so no Hermes data reaches the browser. The UI shell itself is static and carries no data.
-- Sessions use an `HttpOnly`, `SameSite=Strict` cookie. Changes need a same-page request header, so other sites cannot make them.
-- After 5 wrong codes, each further try from the same address waits longer (1 s, doubling, up to 5 minutes).
-- A damaged `access.json` keeps Ruang locked rather than open; `ruang access-code off` clears it.
-- This is Ruang's only write, and it touches Ruang's own config, never Hermes.
+Cara pelindungannya:
+- Hanya hash scrypt dari kode yang disimpan, bersama secret acak yang menandatangani sesi, di `~/.config/ruang/access.json` (mode `0600`; `RUANG_CONFIG_DIR` atau `XDG_CONFIG_HOME` memindahkannya). Kodenya sendiri tidak pernah disimpan, dicatat di log, atau disimpan di peramban.
+- Server yang menegakkan: saat terkunci, setiap rute `/api` kecuali `/api/health` dan rute buka kunci menjawab `401`, jadi tidak ada data Hermes yang sampai ke peramban. Shell UI-nya sendiri statis dan tidak membawa data.
+- Sesi memakai cookie `HttpOnly`, `SameSite=Strict`. Perubahan memerlukan header permintaan dari halaman yang sama, sehingga situs lain tidak bisa melakukannya.
+- Setelah 5 kode salah, setiap percobaan berikutnya dari alamat yang sama menunggu lebih lama (1 detik, berlipat, sampai 5 menit).
+- `access.json` yang rusak membuat Ruang tetap terkunci, bukan terbuka; `ruang access-code off` membersihkannya.
+- Ini satu-satunya penulisan Ruang, dan hanya menyentuh konfigurasi Ruang sendiri, tidak pernah Hermes.
 
-Ruang listens on `127.0.0.1`, so the code matters when you reach it from other devices, for example through an SSH tunnel, Tailscale or a reverse proxy. Over plain HTTP the code crosses the network unencrypted; use an HTTPS tunnel or Tailscale for that.
+Ruang mengikat `127.0.0.1`, jadi kode ini penting saat diakses dari perangkat lain, misalnya lewat SSH tunnel, Tailscale, atau reverse proxy. Lewat HTTP biasa, kode melintas jaringan tanpa enkripsi; pakai tunnel HTTPS atau Tailscale untuk itu.
 
-## Profile lock
+## Kunci profil
 
-Off by default. In **Settings → Profile lock**, pick the agents to lock and set one 6-digit PIN, like app lock on a phone. A locked agent still works and still appears in the office (with 🔒 by its name, and its state such as Working or Idle), but its private data stays hidden until the PIN opens that agent in this browser for 15 minutes:
+Mati secara bawaan. Di **Pengaturan → Kunci profil**, pilih agen yang dikunci dan setel satu PIN 6 digit, seperti app lock di ponsel. Agen terkunci tetap bekerja dan tetap muncul di kantor (dengan 🔒 di namanya, dan statusnya seperti Bekerja atau Santai), tapi data privatnya tetap tersembunyi sampai PIN membuka agen itu di peramban ini selama 15 menit:
 
-| Data | While locked |
+| Data | Saat terkunci |
 |---|---|
-| Folder and file contents, memory (SOUL.md, MEMORY.md, USER.md, context files) | refused (HTTP 423); the Folder and Memory tabs ask for the PIN |
-| Kanban tasks assigned to it | the card stays, titled *🔒 Private task*; its details ask for the PIN |
-| Its cron jobs | the schedule stays, named *🔒 Private job* |
-| Live activity and current task in the office | generic (*🔒 Working*, *On a break*) |
-| Sessions, logs and the latest session (these come from the `default` profile) | hidden when `default` is locked |
-| Token usage | totals stay; its biggest session is hidden |
+| Isi folder dan berkas, memori (SOUL.md, MEMORY.md, USER.md, berkas konteks) | ditolak (HTTP 423); tab Folder dan Memori meminta PIN |
+| Tugas Kanban yang ditugaskan padanya | kartunya tetap, berjudul *🔒 Private task*; detailnya meminta PIN |
+| Cron miliknya | jadwalnya tetap, bernama *🔒 Private job* |
+| Aktivitas langsung dan tugas saat ini di kantor | generik (*🔒 Bekerja*, *On a break*) |
+| Sesi, log, dan sesi terbaru (berasal dari profil `default`) | disembunyikan saat `default` terkunci |
+| Pemakaian token | totalnya tetap; sesi terbesarnya disembunyikan |
 
-Unlocking one agent does not unlock the others, and **🔒 Lock again** closes it early. Changing the locked agents, the PIN or turning the lock off needs the current PIN; a new PIN locks every agent again. The server enforces all of this per request, not just the page.
+Membuka satu agen tidak membuka agen lain, dan **🔒 Kunci lagi** menutupnya lebih awal. Mengubah daftar agen terkunci, PIN, atau mematikan kunci memerlukan PIN saat ini; PIN baru mengunci semua agen lagi. Server menegakkan semua ini per permintaan, bukan hanya di halaman.
 
-- Only a scrypt hash of the PIN is stored, in `~/.config/ruang/profile-lock.json` (mode `0600`), next to the access code.
-- Unlocks are signed, per agent, in an `HttpOnly`, `SameSite=Strict` cookie that expires after 15 minutes.
-- After 5 wrong PINs each try waits longer (1 s, doubling, up to 5 minutes); after 10 wrong PINs, an hour.
-- A damaged lock file keeps every agent locked. Lost the PIN? On the machine: `ruang profile-lock off` (and `ruang profile-lock status`).
-- The lock covers what Ruang shows. Anyone with a shell on the machine can still read `~/.hermes` directly, and Hermes itself is unchanged.
+- Hanya hash scrypt dari PIN yang disimpan, di `~/.config/ruang/profile-lock.json` (mode `0600`), bersebelahan dengan kode akses.
+- Pembukaan ditandatangani, per agen, dalam cookie `HttpOnly`, `SameSite=Strict` yang kedaluwarsa setelah 15 menit.
+- Setelah 5 PIN salah, setiap percobaan menunggu lebih lama (1 detik, berlipat, sampai 5 menit); setelah 10 PIN salah, satu jam.
+- Berkas kunci yang rusak membuat semua agen tetap terkunci. PIN hilang? Di mesin: `ruang profile-lock off` (dan `ruang profile-lock status`).
+- Kunci ini mencakup apa yang ditampilkan Ruang. Siapa pun yang punya shell di mesin tetap bisa membaca `~/.hermes` langsung, dan Hermes sendiri tidak berubah.
 
-## Data and safety
+## Data dan keamanan
 
-The server uses only these fixed, read-only commands:
-- `hermes profile list` (the agents and their gateway states), `opencode --version`
-- `hermes kanban boards list --json`, then `hermes kanban --board <slug> list --json` for each board with tasks (at most four at a time; plain `hermes kanban list --json` on Hermes versions without boards), and `hermes kanban --board <slug> show <id> --json` (task detail)
-- `hermes -p <profile> cron list --all` for every profile in `hermes profile list` (Hermes keeps cron jobs per profile), `hermes sessions list --limit 20`, `hermes skills list --enabled-only`
+Server hanya memakai perintah tetap dan hanya-baca berikut:
+- `hermes profile list` (agen dan status gateway-nya), `opencode --version`
+- `hermes kanban boards list --json`, lalu `hermes kanban --board <slug> list --json` untuk setiap papan yang punya tugas (maksimal empat sekaligus; `hermes kanban list --json` biasa pada versi Hermes tanpa boards), dan `hermes kanban --board <slug> show <id> --json` (detail tugas)
+- `hermes -p <profile> cron list --all` untuk setiap profil di `hermes profile list` (Hermes menyimpan cron per profil), `hermes sessions list --limit 20`, `hermes skills list --enabled-only`
 - `hermes status --all`, `hermes logs <agent|gateway|errors> -n 200`
-- for token usage, for every profile (at most four at a time): `hermes -p <profile> insights --days <1|7|30>`
-- for live Office activity, for every profile (at most four at a time): `hermes -p <profile> logs agent -n 80 --since 3m` and `hermes -p <profile> sessions list --limit 3`
+- untuk pemakaian token, untuk setiap profil (maksimal empat sekaligus): `hermes -p <profile> insights --days <1|7|30>`
+- untuk aktivitas Kantor langsung, untuk setiap profil (maksimal empat sekaligus): `hermes -p <profile> logs agent -n 80 --since 3m` dan `hermes -p <profile> sessions list --limit 3`
 
-How they run:
-- Commands run with `NO_COLOR=1` and a wide `COLUMNS` so the plain-text formats parse reliably.
-- The default gateway state is derived from `hermes profile list`; no separate default gateway command is run.
-- Each command is executed with `execFile` and an 8-second process timeout. Its endpoint result is cached for 10 seconds (insights: 60 seconds; logs: 5 seconds), and concurrent requests share one in-flight read.
-- Browser input never reaches a shell command.
+Cara menjalankannya:
+- Perintah dijalankan dengan `NO_COLOR=1` dan `COLUMNS` lebar supaya format teks biasa terurai andal.
+- Status gateway bawaan diturunkan dari `hermes profile list`; tidak ada perintah gateway terpisah yang dijalankan.
+- Setiap perintah dijalankan dengan `execFile` dan timeout proses 8 detik. Hasil endpoint-nya di-cache 10 detik (insights: 60 detik; log: 5 detik), dan permintaan bersamaan berbagi satu pembacaan yang sedang berjalan. Konkurensi CLI dibatasi (semaphore) karena host 2-CPU mudah mengalami CPU starvation.
+- Input dari peramban tidak pernah mencapai perintah shell.
 
-Only normalized data is exposed:
-- profile/model, gateway state, OpenCode version
-- Kanban title/status and recognized cron fields
-- session title/preview/last-active/parseable ID
-- recognized enabled-skill table fields
-- configured messaging-platform names with a generic configured/connected state, and an integer active-session count when it is safely recognized
+Hanya data ternormalisasi yang diekspos:
+- profil/model, status gateway, versi OpenCode
+- judul/status Kanban dan field cron yang dikenali
+- judul/preview/aktif terakhir/ID sesi yang bisa diurai
+- field tabel skill aktif yang dikenali
+- nama platform pesan yang terkonfigurasi dengan status generik configured/connected, dan jumlah sesi aktif berupa bilangan bulat saat aman dikenali
 
-Log lines are the one intentional exception to "no raw output". They are returned after two redaction passes: Hermes's own secret redaction, then a second pass by the server (API keys, bearer tokens, `key=value` secrets, bot tokens). Home-directory paths are shortened to `~`, and the `hermes logs` header line (which contains a path) is dropped. Cron last-run error text is never returned, only ok/failed.
+Baris log adalah satu-satunya pengecualian yang disengaja terhadap "tanpa output mentah". Baris dikembalikan setelah dua lapis penyamaran: penyamaran rahasia milik Hermes sendiri, lalu lapisan kedua oleh server (API key, bearer token, rahasia `key=value`, token bot). Jalur direktori home dipendekkan menjadi `~`, dan baris header `hermes logs` (yang memuat jalur) dibuang. Teks galat jalan terakhir cron tidak pernah dikembalikan, hanya ok/gagal.
 
-Otherwise, raw CLI output, process details, paths, configuration, credentials, authentication, API keys, environment files, provider details and session databases are never read or returned. A failed source is rendered as `Not Available`; an unknown individual field is rendered as `Unknown`.
+Selain itu, output CLI mentah, detail proses, jalur, konfigurasi, kredensial, autentikasi, API key, berkas environment, detail penyedia, dan basis data sesi tidak pernah dibaca atau dikembalikan. Sumber yang gagal ditampilkan sebagai `Tidak Tersedia`; satu field yang tidak diketahui ditampilkan sebagai `Tidak Diketahui`.
 
-`/api/tasks`, `/api/calendar`, `/api/activity` and `/api/knowledge` each return a source availability state and refresh time:
-- Task Board is read-only and does not expose mutations.
-- Calendar is cron-only, so it intentionally excludes general events.
-- Activity is limited to session-list metadata and does not synthesize events.
-- Knowledge is a curated catalog of enabled skills recognized from Hermes's Rich table.
+`/api/tasks`, `/api/calendar`, `/api/activity` dan `/api/knowledge` masing-masing mengembalikan status ketersediaan sumber dan waktu penyegaran:
+- Papan Tugas hanya-baca dan tidak mengekspos mutasi.
+- Kalender hanya berisi cron, jadi memang tidak menyertakan agenda umum.
+- Aktivitas terbatas pada metadata daftar sesi dan tidak menyintesis peristiwa.
+- Pengetahuan adalah katalog skill aktif yang dikenali dari tabel Rich milik Hermes.
 
-Empty source results remain available and show truthful empty states; unparseable output and command failures are shown as `Not Available`. Hermes write actions are intentionally not implemented. The only things Ruang ever writes are its own optional access code and profile lock files (see *Access code* and *Profile lock*).
+Hasil sumber yang kosong tetap tersedia dan menampilkan keadaan kosong yang jujur; output yang tidak bisa diurai dan kegagalan perintah ditampilkan sebagai `Tidak Tersedia`. Aksi tulis Hermes sengaja tidak diimplementasikan. Satu-satunya hal yang pernah ditulis Ruang adalah berkas kode akses dan kunci profil opsionalnya (lihat *Kode akses* dan *Kunci profil*).
 
-## Office
+## Kantor
 
-`/api/office` is a read-only composition of the existing cached runtime, Kanban and activity reads. It has one station per agent (every Hermes profile, plus OpenCode when installed), in the order `hermes profile list` gives them. Desks are hot desks: there is one per agent and none carries a name. Character colours are derived from the agent name, so they are the same on every device. The 2D view lays out Workspace (desks and the meeting table) and Lounge for any number of agents with CSS only; no image or art assets are used.
+`/api/office` adalah komposisi hanya-baca dari pembacaan runtime, Kanban, dan aktivitas yang sudah di-cache. Isinya satu stasiun per agen (setiap profil Hermes, plus OpenCode kalau terpasang), dalam urutan yang diberikan `hermes profile list`. Mejanya meja bersama: satu per agen dan tidak ada yang bernama. Warna karakter diturunkan dari nama agen, jadi sama di setiap perangkat. Tampilan 2D menata Ruang Kerja (meja dan meja rapat) dan Ruang Santai untuk jumlah agen berapa pun hanya dengan CSS; tidak ada aset gambar atau seni yang dipakai.
 
-Office state is one of `Idle`, `Working`, `Reviewing`, `Collaborating` or `Unknown` (`Offline` is reserved and not produced). The precedence is:
-1. A fresh, unexpired internal explicit-state overlay can declare `Working`, `Reviewing` or `Collaborating`.
-2. Live activity (below), labelled with the agent's running/review Kanban task when there is one.
-3. A fresh Kanban task explicitly assigned to the agent maps `running` to `Working` and `review` to `Reviewing`.
-4. A fresh actor-attributed active session maps to `Collaborating`.
-5. Otherwise, the managed-idle policy applies.
+Status kantor adalah salah satu dari `Idle`, `Working`, `Reviewing`, `Collaborating`, atau `Unknown` (`Offline` disediakan tapi tidak diproduksi). Prioritasnya:
+1. Overlay status eksplisit internal yang segar dan belum kedaluwarsa bisa menyatakan `Working`, `Reviewing`, atau `Collaborating`.
+2. Aktivitas langsung (di bawah), dilabeli dengan tugas Kanban running/review agen itu kalau ada.
+3. Tugas Kanban segar yang secara eksplisit ditugaskan ke agen memetakan `running` ke `Working` dan `review` ke `Reviewing`.
+4. Sesi aktif segar yang diatribusikan ke aktor memetakan ke `Collaborating`.
+5. Kalau tidak ada, kebijakan santai terkelola berlaku.
 
-A stopped gateway does not make an agent offline: it only means the agent is not listening on messaging platforms, and many agents are used from the CLI without one. It is shown on the Agents page and in the idle label (`On a break · gateway stopped`).
+Gateway yang berhenti tidak membuat agen luring: itu hanya berarti agen tidak mendengarkan di platform pesan, dan banyak agen dipakai dari CLI tanpa itu. Ini ditampilkan di halaman Agen dan pada label santai (`On a break · gateway stopped`).
 
-Managed Idle is a transparent server placement policy, not agent-reported presence. It resolves only when all of these hold:
-- fresh runtime, Kanban and activity reads are available
-- there is no fresh explicit overlay
-- Kanban has no agent-attributed running/review task
-- activity has no agent-attributed active session
+Santai Terkelola adalah kebijakan penempatan server yang transparan, bukan kehadiran yang dilaporkan agen. Ia hanya berlaku kalau semua ini terpenuhi:
+- pembacaan runtime, Kanban, dan aktivitas yang segar tersedia
+- tidak ada overlay eksplisit yang segar
+- Kanban tidak punya tugas running/review yang diatribusikan ke agen
+- aktivitas tidak punya sesi aktif yang diatribusikan ke agen
 
-It places the station in Lounge and labels it `Idle · managed placement`. Any unavailable or stale required input leaves the station `Unknown`. Gateway `Running`, generic sessions, unassigned Kanban tasks and OpenCode version availability cannot independently create an active state; OpenCode version availability is explicitly not a state signal.
+Kalau terpenuhi, stasiun ditempatkan di Ruang Santai dan dilabeli `Santai · penempatan terkelola`. Input wajib yang tidak tersedia atau basi membuat stasiun tetap `Unknown`. Gateway `Running`, sesi generik, tugas Kanban tanpa penanggung jawab, dan ketersediaan versi OpenCode tidak bisa sendiri menciptakan status aktif; ketersediaan versi OpenCode secara eksplisit bukan sinyal status.
 
-Current task and recent activity require actor attribution. The Office only shows a Kanban task when its explicit assignee is the agent's profile name (or `opencode`). Hermes session-list metadata currently has no actor attribution, so the Activity panel labels it as unattributed session metadata and it is never assigned to a station. Failed task or activity sources keep the existing `Not Available` meaning: that is source availability, not an Office work state. Selecting a station opens an in-page, keyboard-accessible detail dialog with room, provenance and source freshness.
+Tugas saat ini dan aktivitas terbaru memerlukan atribusi aktor. Kantor hanya menampilkan tugas Kanban saat penanggung jawab eksplisitnya adalah nama profil agen (atau `opencode`). Metadata daftar sesi Hermes saat ini tidak punya atribusi aktor, jadi panel Aktivitas melabelinya sebagai metadata sesi tanpa atribusi dan tidak pernah ditugaskan ke stasiun. Sumber tugas atau aktivitas yang gagal tetap mempertahankan makna `Tidak Tersedia`: itu ketersediaan sumber, bukan status kerja kantor. Memilih stasiun membuka dialog detail di dalam halaman yang bisa diakses lewat keyboard, berisi ruangan, asal-usul, dan kesegaran sumber.
 
-State placement is visualized without inventing work:
-- `Working` and `Reviewing` are at a desk; `Collaborating` is at the meeting table (as many places as needed).
-- `Idle` is in Lounge (in 3D, wandering the office).
-- `Unknown` is shown at a desk with a labelled neutral presence.
+Penempatan status divisualisasikan tanpa mengarang pekerjaan:
+- `Working` dan `Reviewing` di meja; `Collaborating` di meja rapat (sebanyak tempat yang dibutuhkan).
+- `Idle` di Ruang Santai (di 3D, berkeliling kantor).
+- `Unknown` ditampilkan di meja dengan kehadiran netral yang dilabeli.
 
-The crew snapshot counts agents, active work (`Working`/`Reviewing`/`Collaborating`), managed idle and unknown separately. Gateway health (how many profiles report their gateway `Running`) is displayed as a separate metric. When a station has several Kanban tasks, the `running` one wins, then `review`, then the first open task.
+Ringkasan kru menghitung agen, pekerjaan aktif (`Working`/`Reviewing`/`Collaborating`), santai terkelola, dan tidak diketahui secara terpisah. Kesehatan gateway (berapa profil yang melaporkan gateway-nya `Running`) ditampilkan sebagai metrik terpisah. Saat satu stasiun punya beberapa tugas Kanban, yang `running` menang, lalu `review`, lalu tugas terbuka pertama.
 
-`/api/channels` is a separate safe snapshot sourced only from the Messaging Platforms section and active-session count of `hermes status --all`; it never exposes unconfigured platforms or any other status content. The Office introduces no write endpoint, shell input or command beyond the fixed allowlist.
+`/api/channels` adalah snapshot aman terpisah yang hanya bersumber dari bagian Messaging Platforms dan jumlah sesi aktif `hermes status --all`; ia tidak pernah mengekspos platform yang belum terkonfigurasi atau isi status lainnya. Kantor tidak memperkenalkan endpoint tulis, input shell, atau perintah di luar allowlist tetap.
 
-## Live activity in the Office
+## Aktivitas langsung di Kantor
 
-Every Hermes profile writes all of its work to its own `agent.log`: messaging replies (gateway), cron runs, tool calls and the agent loop. For every profile, the server reads the last 3 minutes of that log and the profile's most recent session (at most four profiles at a time, cached for 15 seconds):
+Setiap profil Hermes menulis seluruh pekerjaannya ke `agent.log`-nya sendiri: balasan pesan (gateway), jalan cron, panggilan alat, dan loop agen. Untuk setiap profil, server membaca 3 menit terakhir log itu dan sesi terbaru profil tersebut (maksimal empat profil sekaligus, di-cache 15 detik):
 
-- Gateway message lines together with agent-loop or tool lines, or a session active in the last 3 minutes, become `Collaborating` ("Replying to a chat", at the meeting table).
-- `cron.*` becomes `Working` ("Running a scheduled job"); `tools.*` becomes `Working` ("Using tools"); `agent`/`run_agent` becomes `Working` ("Working on a request").
-- OpenCode is `Working` when a recent agent log line shows it being driven.
+- Baris pesan gateway bersama baris loop agen atau alat, atau sesi yang aktif dalam 3 menit terakhir, menjadi `Collaborating` ("Membalas chat", di meja rapat).
+- `cron.*` menjadi `Working` ("Menjalankan tugas terjadwal"); `tools.*` menjadi `Working` ("Memakai alat"); `agent`/`run_agent` menjadi `Working` ("Mengerjakan permintaan").
+- OpenCode `Working` saat baris log agen yang baru menunjukkan ia sedang digerakkan.
 
-Gateway polling noise and CLI housekeeping lines are ignored.
+Derau polling gateway dan baris housekeeping CLI diabaikan.
 
-## Folders
+## Folder
 
-Each agent resolves to its own folder:
+Setiap agen mengarah ke foldernya sendiri:
 
-| Agent | Folder |
+| Agen | Folder |
 |---|---|
-| `default` | `<hermes root>/profiles/default`; only when that folder does not exist (stock Hermes layout), the Hermes root itself |
-| every other Hermes profile | `<hermes root>/profiles/<name>` |
-| OpenCode (listed only when its folder exists) | `~/.opencode`, then `~/.config/opencode` (`RUANG_OPENCODE_DIR` overrides) |
+| `default` | `<hermes root>/profiles/default`; hanya kalau folder itu tidak ada (tata letak Hermes standar), root Hermes itu sendiri |
+| setiap profil Hermes lainnya | `<hermes root>/profiles/<name>` |
+| OpenCode (hanya terdaftar kalau foldernya ada) | `~/.opencode`, lalu `~/.config/opencode` (`RUANG_OPENCODE_DIR` menimpanya) |
 
-The Hermes root follows Hermes's own rules (`HERMES_HOME`, default `~/.hermes`); `RUANG_HERMES_ROOT` overrides it.
-- A non-default agent that resolves to the Hermes root, or to a folder another agent already owns, is shown as unavailable with the reason instead of being opened.
-- When one agent's folder contains another's (the stock root holds `profiles/`), that sub-folder is hidden and cannot be read through the outer agent.
-- Cards and the breadcrumb show the real path.
+Root Hermes mengikuti aturan Hermes sendiri (`HERMES_HOME`, bawaan `~/.hermes`); `RUANG_HERMES_ROOT` menimpanya.
+- Agen non-`default` yang mengarah ke root Hermes, atau ke folder yang sudah dimiliki agen lain, ditampilkan sebagai tidak tersedia beserta alasannya, bukan dibuka.
+- Saat folder satu agen memuat folder agen lain (root standar memuat `profiles/`), sub-folder itu disembunyikan dan tidak bisa dibaca lewat agen luar.
+- Kartu dan breadcrumb menampilkan jalur sebenarnya.
 
-`/api/folders` lists the agents; `/api/folders/<agent>/list?path=` and `/api/folders/<agent>/file?path=` browse one folder. The safety rules:
-- Every path is resolved (including symlinks) and must stay inside that agent's folder.
-- The `hermes-agent` install, `.git`, virtualenvs and caches are hidden.
-- Credential-bearing and database files (`.env*`, `auth.json`, keys and certificates, names containing token/secret/password/credential, `*.db`/SQLite files) are listed but never read.
-- Text previews are capped at 256 KB and pass through the same secret redaction as logs. Binary files are not previewed.
+`/api/folders` mendaftar agen; `/api/folders/<agent>/list?path=` dan `/api/folders/<agent>/file?path=` menelusuri satu folder. Aturan keamanannya:
+- Setiap jalur diresolusi (termasuk symlink) dan harus tetap di dalam folder agen itu.
+- Instalasi `hermes-agent`, `.git`, virtualenv, dan cache disembunyikan.
+- Berkas kredensial dan basis data (`.env*`, `auth.json`, kunci dan sertifikat, nama yang memuat token/secret/password/credential, berkas `*.db`/SQLite) didaftar tapi tidak pernah dibaca.
+- Pratinjau teks dibatasi 256 KB dan melewati penyamaran rahasia yang sama seperti log. Berkas biner tidak dipratinjau.
 
-**Troubleshooting "This folder could not be read".** Ruang reads folders as the user that runs it. If a profile folder belongs to another user or has mode `700` (for example it was created by a gateway started with `sudo`/systemd as root), the card shows "No read permission for <user>" and opening it explains which user was refused. Check with `ls -ld ~/.hermes/profiles/<name>`. Fix it by giving the folder back to your user (`sudo chown -R $USER:$USER ~/.hermes/profiles/<name>`) or granting read access (`sudo setfacl -R -m u:$USER:rX ~/.hermes/profiles/<name>`).
+**Mengatasi "Folder ini tidak dapat dibaca".** Ruang membaca folder sebagai pengguna yang menjalankannya. Kalau folder profil milik pengguna lain atau bermode `700` (misalnya dibuat oleh gateway yang dijalankan dengan `sudo`/systemd sebagai root), kartunya menampilkan `No read permission for <user>` dan membukanya menjelaskan pengguna mana yang ditolak. Periksa dengan `ls -ld ~/.hermes/profiles/<name>`. Perbaiki dengan mengembalikan folder ke pengguna sendiri (`sudo chown -R $USER:$USER ~/.hermes/profiles/<name>`) atau memberi akses baca (`sudo setfacl -R -m u:$USER:rX ~/.hermes/profiles/<name>`).
+
+## Bahasa antarmuka
+
+Seluruh label, judul halaman, pesan kosong, dan pesan galat sudah berbahasa Indonesia. Yang sengaja tetap Inggris:
+
+- **Slug URL dan id halaman** (`#/task-board`, `#/knowledge`) — supaya tautan lama dan bookmark tetap berfungsi. Nama halaman di menu ditampilkan lewat peta label terpisah.
+- **Id internal dan kontrak API** — `OfficeRoom` (`Workspace`/`Lounge`), `OfficeState` (`Idle`/`Working`/`Reviewing`/`Collaborating`/`Offline`/`Unknown`), `GatewayState` (`Running`/`Stopped`/`Unknown`), dan status Kanban. Semuanya dipetakan ke label Indonesia di lapisan tampilan (`src/format.ts`), jadi payload API dan tes server tetap stabil.
+- **Nama perintah, perangkat, dan platform** — `hermes`, `opencode`, `kanban`, `cron`, Telegram, Discord, Slack, dan sejenisnya adalah nama diri.
+- **Beberapa string yang dikirim server apa adanya** — misalnya `On a break · gateway stopped`, `🔒 Private task`, `🔒 Private job`, `No read permission for <user>`, dan provenance teknis seperti `OpenCode version availability is not a state signal`. UI menerjemahkan sebagian besar yang lain; sisa ini masih Inggris dan belum masuk cakupan terjemahan.
+
+Peta label tinggal di `src/format.ts` (status kerja, ruangan, peran agen, status tugas), `src/routes.ts` (nama halaman), dan `src/usage.ts` (label jenis pekerjaan).

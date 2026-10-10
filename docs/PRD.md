@@ -6,6 +6,7 @@
 | **Tanggal** | 30 September 2026 |
 | **Pemilik Produk** | Prasetya |
 | **Status** | Selesai (Fase 0 hingga 6 Terimplementasi & Terverifikasi) |
+| **Lokalisasi** | Selesai — antarmuka berbahasa Indonesia (Fase 1–5, lihat §16.1) |
 | **Dokumen acuan** | "Hermes + OpenCode Mission Control – Simple Copy-Paste Prompt Pack" |
 
 > **Catatan penyusunan.** Dokumen acuan berbentuk paket prompt, bukan PRD. PRD ini mempertahankan seluruh maksud aslinya (struktur agent, modul, Visual Office, aturan "jangan mengarang data") lalu menambahkan hal yang belum ada: masalah dan metrik, persona, ID kebutuhan yang bisa diuji, model asal-usul data, aturan status, keamanan, arsitektur, risiko, dan fase rilis. Semua hal tentang API/data Hermes yang belum terverifikasi ditandai **[Verifikasi di Fase 0]** dan tidak boleh diasumsikan.
@@ -335,6 +336,32 @@ Lead Agent dan Lead Engineer meninjau sistem saat ini, lalu bertanya **seminimal
 **Prioritas:** MUST HAVE · SHOULD HAVE · LATER · DO NOT BUILD.
 
 **Keluaran wajib:** 3 perbaikan teratas; masalah bisnis yang diselesaikan; data yang dibutuhkan; integrasi yang dibutuhkan; dampak ke Mission Control; dampak ke Visual Office; estimasi kompleksitas (Rendah/Sedang/Tinggi); alasan dibangun sekarang atau tidak. **Jangan implementasi sebelum ada persetujuan.** Setelah disetujui: Lead Agent → Lead Engineer → OpenCode → Uji → Review.
+
+## 16.1 Lokalisasi Antarmuka (Bahasa Indonesia)
+
+**Tujuan.** Operator di BKI Pontianak dan perusahaan pelayaran membaca sistem ini setiap hari; seluruh label, judul halaman, pesan kosong, pesan galat, dan petunjuk harus berbahasa Indonesia. Istilah teknis yang tidak punya padanan lazim (`cron`, `gateway`, `Kanban`, `token`) tetap dipakai apa adanya.
+
+**Aturan yang dipegang.**
+1. **Slug URL dan id halaman tetap Inggris** (`#/task-board`, `#/knowledge`) supaya tautan lama dan bookmark tidak putus. Nama halaman di menu ditampilkan lewat peta label terpisah (`PAGE_LABELS_ID` di `src/routes.ts`).
+2. **Id internal dan kontrak API tidak diubah.** `OfficeRoom` (`Workspace`/`Lounge`), `OfficeState` (`Idle`/`Working`/`Reviewing`/`Collaborating`/`Offline`/`Unknown`), `GatewayState` (`Running`/`Stopped`/`Unknown`), dan status Kanban tetap Inggris di payload. Pemetaan ke label Indonesia dilakukan di lapisan tampilan, sehingga tes server dan kontrak API stabil.
+3. **Peta label terpusat.** `src/format.ts` (status kerja, ruangan, peran agen, status tugas), `src/routes.ts` (nama halaman), `src/usage.ts` (jenis pekerjaan). Satu istilah untuk satu konsep — tidak ada dua kata untuk hal yang sama.
+4. **Tes yang mengunci string lama diperbarui di commit yang sama**, bukan dihapus.
+
+**Cakupan per fase.**
+
+| Fase | Cakupan | Hasil |
+|---|---|---|
+| 1 | Chrome bersama: `ui.tsx`, `office-state.ts`, `request-state.ts`, `access.ts`, `profile-lock.ts` | label `Memuat`, `Tidak Tersedia`, `Menghubungkan`, `Basi (segarkan gagal)`, tombol segarkan |
+| 2 | Dashboard: label Indonesia + banner Antrean Persetujuan + widget OpenCode build | sudah ada sebelum lokalisasi menyeluruh |
+| 3 | Pemulihan fitur lokal yang hilang saat rebase + terjemahan berkas kode akses | Specialized Roles, label dashboard, teks berkas unduhan |
+| 4 | Halaman inti: Office, Agents, Task Board, Stats | HUD, tab panel, dialog detail, kolom papan, kartu agen, catatan banner engineering |
+| 5 | Halaman sekunder: Calendar, Activity, Memory, Folders, Logs, Settings, Usage, Build, LockScreen, ProfileLock | termasuk 14 label aktivitas santai di `office3d-layout.ts` dan string operator di sisi server |
+
+**Cara mengukur cakupan.** Skrip sekali jalan memindai `src/**/*.tsx|ts`: ambil JSX text node, prop user-facing (`title`/`label`/`placeholder`/`message`/`aria-label`), dan literal label; saring dengan penanda bahasa Indonesia untuk memisahkan yang sudah diterjemahkan, lalu buang kecocokan code-ish. Angkanya turun **457 → 326 → ~0** string UI Inggris di seluruh `src/`. Sisa yang memang dibiarkan Inggris: slug URL, id internal, nama platform dan alat, serta beberapa string yang dikirim server apa adanya (`On a break · gateway stopped`, `🔒 Private task`, `🔒 Private job`, `No read permission for <user>`, provenance teknis).
+
+**Verifikasi.** Setiap fase diverifikasi dengan `tsc --noEmit`, `vitest run`, `eslint .`, dan `npm run build`, lalu dibaca langsung dari DOM peramban (bukan dari kode sumber) untuk memastikan string benar-benar terkirim ke browser. Bundle hasil build juga diperiksa dengan `grep` untuk membuktikan string baru ada dan string lama sudah hilang.
+
+---
 
 ## 17. Risiko dan Mitigasi
 
