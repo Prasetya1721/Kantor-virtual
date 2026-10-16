@@ -1,0 +1,34 @@
+{
+  "sumber_utama": {
+    "video": "https://www.youtube.com/watch?v=tYBZ0OIKBww",
+    "judul": "Just Use Screenshots! Create Professional Affiliate Videos for Free Using AI",
+    "channel": "Tech Review Id (22.4K subs, 46.165 views, Jun 2026)",
+    "metode": "AI Storyboard — alternatif Flow AI"
+  },
+  "sumber_lengkap": {
+    "video": "https://www.youtube.com/watch?v=PAZw9TUOrZ0",
+    "judul": "MUDAHNYA MEMBUAT VIDEO AFFILIATE TIKTOK DAN SHOPEE DENGAN TEKNIK STORYBOARD AI",
+    "channel": "Azkia Rafifah",
+    "transcript": "penuh (diambil via web_extract)"
+  },
+  "metode_inti": [
+    "1. Bahan: screenshot foto produk dari Shopee/TikTok Shop + foto model menghadap depan (bisa buatan AI)",
+    "2. Buat STORYBOARD dulu di ChatGPT (create image): upload foto model + foto produk + prompt 'buatkan storyboard video affiliate lengkap dengan dialog, durasi 10 detik'",
+    "3. Storyboard = papan cerita berisi per-detik: dialog, teks layar, gaya voice (ceria), dan gambar adegan",
+    "4. Cek storyboard SEDERIT — kesalahan di storyboard = kesalahan di video (contoh kegagalan: 3 tangan muncul)",
+    "5. B storyboard yang sudah benar ke Google Flow (OmniFlash, gratis 50 poin/hari = 3 video x 10 detik), rasio 9:16, upload gambar storyboard, prompt 'buatlah video yang keren dari gambar storyboard ini'",
+    "6. Download video hasil generate, gabung/finishing di editor (CapCut dkk), upload"
+  ],
+  "keuntungan": [
+    "Gratis (storyboard ChatGPT + 50 poin harian Flow)",
+    "Preview visual sebelum bayar kredit video",
+    "Hasil realistis: karakter AI memegang produk asli (product holding)",
+    "Tanpa punya produk fisik, tanpa shooting"
+  ],
+  "jebakan": [
+    "Anatomi AI salah (tangan jumlahnya aneh, teks typo) — WAJIB cek storyboard detail",
+    "Satu generate OmniFlash max 10 detik → video 15-20s harus 2 klip digabung",
+    "Poin Flow habis → ganti akun Gmail (dicontoh di video) atau tunggu reset harian"
+  ],
+  "dibuat": "2026-10-16T14:59:15.775720+00:00"
+}
