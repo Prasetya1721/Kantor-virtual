@@ -1,0 +1,54 @@
+{
+  "period": "Oktober 2026",
+  "dibuat": "2026-10-16T13:56:29.384752Z",
+  "sumber": [
+    "data.goodstats.id — 10 Brand Serum Wajah Terlaris di Shopee Indonesia Q1 2026 (data Compas)",
+    "goodstats.id — 5 Brand Kosmetik Lokal Terlaris di Shopee Indonesia 2025 (data Compas)",
+    "media90.id — Anker Soundcore R50i: TWS Terlaris 2026",
+    "golocad.com — 10 Produk Terlaris di Shopee (kategori fashion, skincare, perlengkapan rumah)",
+    "accio.com — Shopee Top Selling Products Indonesia 2026 (tren live shopping)"
+  ],
+  "kandidat": [
+    {
+      "peringkat": 1,
+      "produk": "Anker Soundcore R50i (TWS/earbuds)",
+      "kategori": "Elektronik — Audio",
+      "alasan": "TWS entry-level paling laku sepanjang 2026; harga promo Rp158rb–199rb di Shopee, garansi resmi 18 bulan; volume pencarian tinggi, cocok untuk video demo singkat (bass, unboxing, pairing).",
+      "harga_kisaran": "Rp158.000 – Rp199.000 (promo Shopee)",
+      "risiko": "Persaingan ketat banyak affiliate; perlu angle unboxing + tes bass."
+    },
+    {
+      "peringkat": 2,
+      "produk": "Skintific Serum Wajah (Niacinamide/Gordyn)",
+      "kategori": "Kecantikan — Skincare",
+      "alasan": "Brand serum #1 Shopee Q1 2026, pangsa pasar 6,4% (Compas); before-after visual cocok untuk video 10–20 detik.",
+      "harga_kisaran": "Rp60.000 – Rp130.000",
+      "risiko": "Klaim efek harus hati-hati (BPOM, jangan berlebihan)."
+    },
+    {
+      "peringkat": 3,
+      "produk": "Wardah (kosmetik lokal, lip cream/komplek)",
+      "kategori": "Kecantikan — Lokal",
+      "alasan": "Brand lokal terlaris Shopee (2,97% pangsa Q1 2025, tetap kuat 2026); halal, pasar luas, harga ramah.",
+      "harga_kisaran": "Rp30.000 – Rp90.000",
+      "risiko": "Margin affiliate tipis; perlu volume."
+    },
+    {
+      "peringkat": 4,
+      "produk": "d’Alba White Truffle Mist / Skin1004",
+      "kategori": "Kecantikan — Skincare premium",
+      "alasan": "d’Alba naik ke #2 serum (4,75%) dan Skin1004 #3 (4,44%) Q1 2026; tren naik, video aesthetic.",
+      "harga_kisaran": "Rp120.000 – Rp250.000",
+      "risiko": "Harga lebih tinggi, konversi lebih rendah tapi komisi per unit lebih besar."
+    },
+    {
+      "peringkat": 5,
+      "produk": "Hanasui (serum/glow lokal)",
+      "kategori": "Kecantikan — Lokal",
+      "alasan": "Serum #6 (3,83%) dan kosmetik lokal #2; harga murah, konversi mudah untuk konten massal.",
+      "harga_kisaran": "Rp25.000 – Rp70.000",
+      "risiko": "Banyak affiliate, konten harus beda angle."
+    }
+  ],
+  "keputusan_video_pertama": "Anker Soundcore R50i — kategori elektronik paling visual, konversi tinggi, mudah dianimasikan tanpa footage produk asli (frame motion-graphics bertema TWS)."
+}
