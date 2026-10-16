@@ -139,6 +139,7 @@ function idleStops(building: OfficeLayout['building'], baksoCart: Vec3, kopiBike
     { key: 'dapur', label: 'Di dapur', spots: [spot(8.25, 2.6, Math.PI / 2), spot(8.3, 0.65, Math.PI / 2), spot(8.25, 3.3, Math.PI / 2)] },
     { key: 'kopi', label: 'Ngopi di sepeda kopi', spots: [stallSpot(kopiBike, -0.5, 0.85, Math.PI), stallSpot(kopiBike, 0.5, 0.85, Math.PI), stallSpot(kopiBike, 1.45, 0.3, -Math.PI / 2)] },
     { key: 'game', label: 'Main ping-pong', spots: [spot(PING_PONG[0] - 1.75, PING_PONG[2], Math.PI / 2), spot(PING_PONG[0] + 1.75, PING_PONG[2], -Math.PI / 2), spot(BEANBAGS[0][0], BEANBAGS[0][2], Math.PI, true, 'Main konsol')] },
+    { key: 'studio', label: 'Rekam video di studio Shopee', spots: [spot(6.9, 2.1, 0), spot(7.3, 1.6, 0.6, true, 'Menulis naskah di meja kreator'), spot(8.3, 1.4, -Math.PI / 2, true, 'Merapikan rak produk')] },
     { key: 'arcade', label: 'Main arcade', spots: [spot(ARCADES[0][0], ARCADES[0][2] + 0.8, Math.PI), spot(ARCADES[1][0], ARCADES[1][2] + 0.8, Math.PI), spot(BEANBAGS[1][0], BEANBAGS[1][2], Math.PI, true, 'Main konsol')] },
     { key: 'jalan', label: 'Jalan-jalan santai', spots: [spot(FLAG[0] - 0.8, FLAG[2] + 0.3, Math.PI / 2), spot(building.minX + 0.95, -0.9, -Math.PI / 2), spot(1.3, -4.4, Math.PI)] },
   ]
@@ -294,7 +295,7 @@ function simplify(from: [number, number], route: [number, number][], to: [number
 
 /** How long an idle agent stays at one stop (walking included). */
 export const IDLE_STOP_MS = 32_000
-export const IDLE_ROUTE = ['lounge', 'galon', 'balkon', 'game', 'bakso', 'tidur', 'jalan', 'arcade', 'lesehan', 'kopi', 'dapur', 'balkon', 'game', 'tidur']
+export const IDLE_ROUTE = ['lounge', 'galon', 'balkon', 'game', 'bakso', 'tidur', 'jalan', 'studio', 'arcade', 'lesehan', 'kopi', 'dapur', 'balkon', 'tidur']
 
 export interface IdleAssignment { stop: IdleStop; placement: Placement }
 

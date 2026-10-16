@@ -830,3 +830,39 @@ aside.office-panel { background: color-mix(in srgb, var(--surface) 96%, transpar
 .role-skills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; padding-top: 8px; }
 .role-tag { background: var(--surface-2); border: 1px solid var(--border); border-radius: 3px; color: var(--accent); font: 10px ui-monospace, monospace; padding: 2px 6px; }
 .role-footer { border-top: 1px dashed var(--border); color: var(--text-dim); font: 11px ui-monospace, monospace; margin-top: 6px; padding-top: 8px; }
+
+/* ---- Studio Shopee ---- */
+.quota-card { background: var(--surface); border: 1px solid var(--border); margin-top: 24px; padding: 20px; }
+.quota-head { align-items: center; display: flex; gap: 16px; justify-content: space-between; flex-wrap: wrap; }
+.quota-head strong { font-size: 22px; }
+.text-good { color: var(--c-a9e1be); } .text-warn { color: var(--c-eab474); }
+.quota-bar { background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; height: 14px; margin: 14px 0 8px; overflow: hidden; }
+.quota-fill { background: var(--c-eab474); height: 100%; transition: width .4s ease; }
+.quota-fill.met { background: var(--c-74c59a); }
+.studio-add { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.studio-add input { background: var(--surface); border: 1px solid var(--border); color: var(--text); flex: 1 1 220px; font: 14px inherit; padding: 10px 12px; }
+.studio-add input:focus { border-color: var(--accent); outline: none; }
+.studio-add .refresh-button:disabled { opacity: .5; }
+.studio-empty { border: 1px dashed var(--border); margin-top: 18px; padding: 24px; text-align: center; }
+.studio-list { display: grid; gap: 10px; list-style: none; margin: 18px 0 0; padding: 0; }
+.studio-list li { background: var(--surface); border: 1px solid var(--border); padding: 14px 16px; }
+.studio-row { align-items: center; display: flex; gap: 10px; flex-wrap: wrap; }
+.studio-row-actions { align-items: center; display: flex; gap: 12px; justify-content: space-between; flex-wrap: wrap; margin-top: 10px; }
+.studio-steps { display: flex; gap: 6px; flex-wrap: wrap; }
+.studio-steps .step { border: 1px solid var(--border); color: var(--text-dim); font: 10px ui-monospace, monospace; letter-spacing: .05em; padding: 3px 8px; text-transform: uppercase; }
+.studio-steps .step.done { background: var(--c-203d2d); border-color: var(--c-74c59a); color: var(--c-a9e1be); }
+.studio-row-actions > div:last-child { display: flex; gap: 8px; }
+.studio-archive { border-top: 1px solid var(--border); margin-top: 26px; padding-top: 14px; }
+.studio-archive ul { color: var(--text-muted); font: 12px ui-monospace, monospace; list-style: none; margin: 8px 0 0; padding: 0; }
+.studio-riset { border-top: 1px solid var(--border); margin-top: 26px; padding-top: 14px; }
+.riset-list { display: grid; gap: 8px; list-style: none; margin: 12px 0 0; padding: 0; }
+.riset-list li { align-items: center; background: var(--surface); border: 1px solid var(--border); display: flex; gap: 12px; flex-wrap: wrap; padding: 10px 14px; }
+.riset-list small { color: var(--text-dim); flex: 1 1 260px; }
+.studio-team { border-top: 1px solid var(--border); margin-top: 26px; padding-top: 14px; }
+.team-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); margin-top: 14px; }
+.team-grid article { background: var(--surface); border: 1px solid var(--border); display: grid; gap: 10px; padding: 16px; }
+.team-head { display: flex; gap: 10px; }
+.team-head small { color: var(--text-dim); display: block; }
+.team-icon { font-size: 22px; }
+.team-grid ul { color: var(--text-muted); font-size: 12px; line-height: 1.55; margin: 0; padding-left: 16px; }
+.team-crew { display: flex; gap: 10px; margin-top: 12px; }

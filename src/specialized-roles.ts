@@ -7,7 +7,7 @@
  */
 export interface SpecializedRole {
   title: string
-  category: 'Peran Utama' | 'Peran Pendukung & Tim'
+  category: 'Peran Utama' | 'Peran Pendukung & Tim' | 'Tim Studio Shopee'
   icon: string
   focus: string
   skills: string[]
@@ -85,6 +85,42 @@ export const SPECIALIZED_ROLES: SpecializedRole[] = [
       'Menulis unit & integration tests sebelum dan sesudah koding (TDD)',
       'Verifikasi kepatuhan Acceptance Criteria (Given/When/Then)',
       'Deteksi regresi bug otomatis untuk menjaga akurasi 100%',
+    ],
+  },
+  {
+    title: 'Riset Produk Shopee',
+    category: 'Tim Studio Shopee',
+    icon: '🔎',
+    focus: 'Riset Produk Terlaris & Tren Pasar',
+    skills: ['competitor-news-monitor', 'grounded-citations', 'rss-feeds'],
+    responsibilities: [
+      'Riset mingguan produk terlaris Shopee dari data pasar nyata (GoodStats/Compas)',
+      'Menyusun shortlist 5 kandidat produk: harga, margin komisi, dan potensi visual',
+      'Memantau tren kategori (elektronik, skincare, fashion) dan live shopping',
+    ],
+  },
+  {
+    title: 'Konten Kreator Shopee',
+    category: 'Tim Studio Shopee',
+    icon: '🎬',
+    focus: 'Naskah, Video 10–20 Detik & Upload',
+    skills: ['manim-video', 'songwriting-and-ai-music', 'claude-design'],
+    responsibilities: [
+      'Menulis naskah hook-fitur-CTA untuk video vertikal 10–20 detik',
+      'Merender video motion-graphics (ffmpeg) yang aman hak cipta untuk Shopee Affiliate',
+      'Menjaga kuota minimal 5 konten upload per periode (mingguan)',
+    ],
+  },
+  {
+    title: 'Koordinator Studio',
+    category: 'Tim Studio Shopee',
+    icon: '🗂️',
+    focus: 'Pipeline, Kuota & Laporan Mingguan',
+    skills: ['weekly-review-planning', 'document-to-action-items'],
+    responsibilities: [
+      'Mengatur pipeline Riset → Naskah → Video → Upload tanpa tahap macet',
+      'Melaporkan progres kuota konten dan hasil tiap periode ke Oppa',
+      'Menjadwalkan riset ulang produk setiap Senin pagi',
     ],
   },
 ]

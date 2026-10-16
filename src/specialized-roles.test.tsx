@@ -13,7 +13,7 @@ const runtime: RuntimeSnapshot = {
 } as RuntimeSnapshot
 
 describe('declared engineering roles', () => {
-  it('declares the six specialist roles across both categories', () => {
+  it('declares the engineering roles across all categories, studio team last', () => {
     const titles = SPECIALIZED_ROLES.map((role) => role.title)
     expect(titles).toEqual([
       'Front-End Developer',
@@ -22,9 +22,13 @@ describe('declared engineering roles', () => {
       'UI/UX Designer',
       'Project Manager',
       'QA (Quality Assurance) Tester',
+      'Riset Produk Shopee',
+      'Konten Kreator Shopee',
+      'Koordinator Studio',
     ])
     expect(SPECIALIZED_ROLES.filter((role) => role.category === 'Peran Utama')).toHaveLength(3)
     expect(SPECIALIZED_ROLES.filter((role) => role.category === 'Peran Pendukung & Tim')).toHaveLength(3)
+    expect(SPECIALIZED_ROLES.filter((role) => role.category === 'Tim Studio Shopee')).toHaveLength(3)
   })
 
   it('gives every role at least one responsibility and one skill', () => {

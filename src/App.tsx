@@ -9,6 +9,7 @@ import { Logs } from './pages/Logs.tsx'
 import { Memory } from './pages/Memory.tsx'
 import { Office } from './pages/Office.tsx'
 import { Settings } from './pages/Settings.tsx'
+import { StudioShopee } from './pages/StudioShopee.tsx'
 import { Usage } from './pages/Usage.tsx'
 import { TaskBoard } from './pages/TaskBoard.tsx'
 import { LOCKED_EVENT, loadAccess, type AccessStatus } from './access.ts'
@@ -78,7 +79,7 @@ function Shell({ onRefresh, access, onAccessChange }: { onRefresh: () => void; a
   const alerts = (data && data.commands.failed > 0 ? 1 : 0)
   const pendingReviews = data?.tasks.byStatus.review ?? 0
   const failedGateways = data ? data.runtime.profiles.availability === 'available' ? data.runtime.profiles.data.filter((profile) => profile.gateway === 'Stopped').length : 0 : 0
-  const content = page === 'Agents' ? <Agents runtime={data?.runtime ?? null} pending={dashboard.status === 'pending'}/> : page === 'Office' ? <Office dashboard={data} dashboardPending={dashboard.status === 'pending'} onNavigate={navigate}/> : page === 'Usage' ? <Usage/> : page === 'Build' ? <Build/> : page === 'Task Board' ? <TaskBoard/> : page === 'Calendar' ? <Calendar/> : page === 'Activity' ? <Activity/> : page === 'Memory' ? <Memory onOpenFolders={() => navigate('Folders')}/> : page === 'Folders' ? <Folders/> : page === 'Settings' ? <Settings access={access} onAccessChange={onAccessChange}/> : <Logs/>
+  const content = page === 'Agents' ? <Agents runtime={data?.runtime ?? null} pending={dashboard.status === 'pending'}/> : page === 'Office' ? <Office dashboard={data} dashboardPending={dashboard.status === 'pending'} onNavigate={navigate}/> : page === 'Usage' ? <Usage/> : page === 'Build' ? <Build/> : page === 'Task Board' ? <TaskBoard/> : page === 'Studio Shopee' ? <StudioShopee/> : page === 'Calendar' ? <Calendar/> : page === 'Activity' ? <Activity/> : page === 'Memory' ? <Memory onOpenFolders={() => navigate('Folders')}/> : page === 'Folders' ? <Folders/> : page === 'Settings' ? <Settings access={access} onAccessChange={onAccessChange}/> : <Logs/>
 
   return <div className={`app${page === 'Office' ? ' app-office' : ''}`}>
     {menuOpen && <div className="drawer-backdrop" onClick={closeMenu} aria-hidden="true"/>}

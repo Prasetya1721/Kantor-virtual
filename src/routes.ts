@@ -1,4 +1,4 @@
-export const navigation = ['Office', 'Agents', 'Usage', 'Task Board', 'Build', 'Calendar', 'Activity', 'Memory', 'Folders', 'Logs', 'Settings'] as const
+export const navigation = ['Office', 'Agents', 'Usage', 'Task Board', 'Studio Shopee', 'Build', 'Calendar', 'Activity', 'Memory', 'Folders', 'Logs', 'Settings'] as const
 export type Page = typeof navigation[number]
 
 /** The page shown when the address names no page (or an unknown one). */
@@ -14,6 +14,7 @@ export const PAGE_LABELS_ID: Record<string, string> = {
   Agents: 'Agen',
   Usage: 'Pemakaian',
   'Task Board': 'Papan Tugas',
+  'Studio Shopee': 'Studio Shopee',
   Build: 'Build',
   Calendar: 'Kalender',
   Activity: 'Aktivitas',

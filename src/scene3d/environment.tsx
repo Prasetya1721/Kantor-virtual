@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { ARCADES, BALCONY, BALCONY_DOOR, BALCONY_TABLE, BATHROOM, BEANBAGS, CARROM, COFFEE_TABLE, ENTRANCE_X, FLAG, FLOOR_HEIGHT, type Floor as FloorNumber, GAME_DOOR, GAME_ROOM, GAME_TV, HAMMOCK, LESEHAN_TABLE, LOUNGE_PARTITION_END_Z, MEETING_TABLE, PARTITION_X, PING_PONG, SOFA, STAIRS, STALL_ROTATION, type OfficeLayout, TV, type Vec3 } from '../office3d-layout.ts'
-import { AcOutdoorUnit, AirConditioner, ArcadeCabinet, Armchair, BathroomFittings, Beanbag, Bed, Bookshelf, CarromTable, ClothesLine, CoffeeTable, FlagPole, FloorCushion, Fridge, GalonDispenser, Gerobak, Hammock, KopiSepeda, LowTable, MeetingTable, Nightstand, OfficeLight, PantryCounter, PingPongTable, Plant, Railing, RattanChair, RBox, SideTable, Sofa, Staircase, StreetLamp, StringLights, Television, Tree, Vendor, WallClock, Wardrobe, WaterTank } from './props.tsx'
+import { AcOutdoorUnit, AirConditioner, ArcadeCabinet, Armchair, BathroomFittings, Beanbag, Bed, Bookshelf, CarromTable, ClothesLine, CoffeeTable, CreatorDesk, FlagPole, FloorCushion, Fridge, GalonDispenser, Gerobak, Hammock, KopiSepeda, LowTable, MeetingTable, Nightstand, OfficeLight, PantryCounter, PingPongTable, Plant, ProductRack, Railing, RattanChair, RBox, RingLight, SideTable, Sofa, Staircase, StreetLamp, StringLights, Television, Tree, TripodCamera, Vendor, WallClock, Wardrobe, WaterTank } from './props.tsx'
 import { asphalt, carpet, grass, pavingStones, tileFloor, woodFloor } from './textures.ts'
 
 // The building (floors, walls, windows, furniture) and its surroundings (yard, sidewalk,
@@ -73,6 +73,7 @@ function Building({ night, layout }: { night: boolean; layout: OfficeLayout }) {
   const tiles = useMemo(() => tileFloor([3, 5]), [])
   const rug = useMemo(() => carpet('#5b7c8c', [2, 2]), [])
   const meetingRug = useMemo(() => carpet('#8a4b3c', [2, 2]), [])
+  const studioCarpet = useMemo(() => carpet('#ee4d2d', [3, 2]), [])
   return <group>
     {/* Floors: parquet everywhere, tiles in the pantry, rugs in the lounge and meeting area */}
     <Floor position={[(minX + maxX) / 2, 0.005, (minZ + maxZ) / 2]} size={[maxX - minX, maxZ - minZ]} map={wood} roughness={0.55}/>
@@ -124,6 +125,16 @@ function Building({ night, layout }: { night: boolean; layout: OfficeLayout }) {
     <AirConditioner position={[minX + 0.125, 2.3, 2.6]} rotation={Math.PI / 2}/>
     {/* Office lights: suspended cool-white LED bars */}
     {[...layout.desks.map(([x, , z]): Vec3 => [x, 2.4, z + 0.2]), [MEETING_TABLE[0], 2.3, MEETING_TABLE[2]] as Vec3, [COFFEE_TABLE[0], 2.4, COFFEE_TABLE[2] + 0.4] as Vec3, [8.2, 2.4, 1.2] as Vec3].map((position) => <OfficeLight key={position.join(',')} position={position} night={night}/>)}
+    <OfficeLight position={[8.2, 2.4, 1.2]} night={night}/>
+    {/* Studio Shopee corner by the front wall: shooting spot between the ring light and the camera */}
+    <group>
+      <Floor position={[6.9, 0.013, 1.9]} size={[3, 2.2]} map={studioCarpet} roughness={0.95}/>
+      <RingLight position={[7.6, 0, 2.5]} night={night}/>
+      <TripodCamera position={[6.2, 0, 2.6]} rotation={-0.6}/>
+      <ProductRack position={[8.4, 0, 1.4]} rotation={-Math.PI / 2}/>
+      <CreatorDesk position={[5.9, 0, 1.2]} rotation={Math.PI / 2}/>
+      <OfficeLight position={[6.9, 2.4, 2]} night={night}/>
+    </group>
     <Stairs/>
     <GameRoom night={night}/>
   </group>

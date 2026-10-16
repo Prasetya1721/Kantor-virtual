@@ -26,6 +26,33 @@ describe('3D office placement', () => {
   })
 })
 
+describe('Studio Shopee corner', () => {
+  const studio = IDLE_STOPS.find((stop) => stop.key === 'studio')
+
+  it('exists on the idle route with three usable spots', () => {
+    expect(studio).toBeDefined()
+    expect(studio!.spots.length).toBeGreaterThanOrEqual(3)
+    expect(IDLE_ROUTE).toContain('studio')
+  })
+
+  it('sits inside the building near the entrance, clear of desks and the meeting table', () => {
+    for (const { position } of studio!.spots) {
+      const [x, , z] = position
+      expect(x).toBeGreaterThan(BUILDING.minX + 0.5)
+      expect(x).toBeLessThan(9.5)
+      expect(z).toBeGreaterThan(0.6) // in front of the desks, on the entrance side
+      expect(z).toBeLessThan(3.4) // clear of the stairs line (STAIRS.z)
+      expect(Math.hypot(x - MEETING_TABLE[0], z - MEETING_TABLE[2])).toBeGreaterThan(1.6)
+    }
+  })
+
+  it('is reachable on foot from the aisle', () => {
+    const [x, , z] = studio!.spots[0].position
+    const path = walkPath([-2, AISLE_Z], [x, z])
+    expect(path.at(-1)).toEqual([x, z])
+  })
+})
+
 describe('3D office movement', () => {
   it('walks via the aisle instead of through desks', () => {
     expect(walkPath([-7.2, -4.25], [-2, -4.25])).toEqual([[-7.2, AISLE_Z], [-2, AISLE_Z], [-2, -4.25]])

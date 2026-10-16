@@ -595,3 +595,51 @@ export function BathroomFittings({ position }: { position: Vec3 }) {
     <RBox position={[-0.3, 0.6, -2.05]} size={[0.42, 0.45, 0.16]} radius={0.04} color="#f6f7f5" roughness={0.25}/>
   </Group>
 }
+
+// ---------------------------------------------------------------------------
+// Studio Shopee: content-creator corner (ring light, camera tripod, product rack)
+
+/** Ring light on a stand, glowing towards the subject (+z). */
+export function RingLight({ position, night = false }: { position: Vec3; night?: boolean }) {
+  return <Group position={position}>
+    <Cyl position={[0, 0.85, 0]} radius={0.025} height={1.7} color="#8b9297" metalness={0.6} roughness={0.3}/>
+    {[[-0.28, 0.06], [0.28, 0.06], [0, -0.32]].map(([x, z]) => <Cyl key={`${x}${z}`} position={[x, 0.03, z]} radius={0.02} height={0.06} color="#2a2f33"/>)}
+    <mesh position={[0, 1.85, 0.04]} rotation={[0, 0, 0]} castShadow>
+      <torusGeometry args={[0.28, 0.05, 10, 28]}/>
+      <meshStandardMaterial color="#fff6e0" emissive="#ffe9b8" emissiveIntensity={night ? 1.6 : 0.7}/>
+    </mesh>
+    <RBox position={[0, 1.85, 0]} size={[0.06, 0.3, 0.06]} radius={0.01} color="#8b9297" shadow={false}/>
+  </Group>
+}
+
+/** Camera on a tripod, lens towards the subject. */
+export function TripodCamera({ position, rotation = 0 }: { position: Vec3; rotation?: number }) {
+  return <Group position={position} rotation={rotation}>
+    {[0.32, 1.77, 3.22].map((angle) => <RBox key={angle} position={[Math.sin(angle) * 0.16, 0.62, Math.cos(angle) * 0.16]} rotation={[Math.sin(angle) * 0.22, 0, -Math.cos(angle) * 0.22]} size={[0.035, 1.3, 0.035]} radius={0.008} color="#2a2f33"/>)}
+    <Cyl position={[0, 1.28, 0]} radius={0.03} height={0.3} color="#8b9297" metalness={0.5}/>
+    <RBox position={[0, 1.5, 0]} size={[0.18, 0.12, 0.1]} radius={0.02} color="#1c1f24"/>
+    <Cyl position={[0, 1.5, 0.07]} radius={0.035} height={0.06} rotation={[Math.PI / 2, 0, 0]} color="#111417"/>
+    <mesh position={[0.02, 1.53, 0.052]}><circleGeometry args={[0.012, 10]}/><meshStandardMaterial color="#7fb7d9" emissive="#7fb7d9" emissiveIntensity={0.35}/></mesh>
+  </Group>
+}
+
+/** Product rack: three shelves of small product boxes, Shopee-orange frame. */
+export function ProductRack({ position, rotation = 0 }: { position: Vec3; rotation?: number }) {
+  const boxes = ['#ee4d2d', '#f5f0e8', '#2a9d8f', '#e9c46a', '#3d7fd6', '#d64545', '#8d5bc1', '#7a5232']
+  return <Group position={position} rotation={rotation}>
+    {[[-0.4, 0.03], [0.4, 0.03], [-0.4, 0.77], [0.4, 0.77]].map(([x, z]) => <RBox key={`${x}${z}`} position={[x, 0.55, z]} size={[0.05, 1.1, 0.05]} radius={0.01} color="#ee4d2d"/>)}
+    {[0.28, 0.78, 1.28].map((y) => <RBox key={y} position={[0, y, 0]} size={[0.9, 0.035, 0.4]} radius={0.01} color="#ee4d2d"/>)}
+    {[0, 1, 2].map((row) => boxes.slice(row * 3, row * 3 + 3).map((color, column) => <RBox key={`${row}-${column}`} position={[-0.28 + column * 0.28, [0.4, 0.9, 1.4][row], 0]} size={[0.2, 0.2, 0.16]} radius={0.02} color={color} roughness={0.85}/>))}
+  </Group>
+}
+
+/** Creator desk with a phone on a mini tripod facing the shooting spot. */
+export function CreatorDesk({ position, rotation = 0 }: { position: Vec3; rotation?: number }) {
+  return <Group position={position} rotation={rotation}>
+    <RBox position={[0, 0.72, 0]} size={[1.3, 0.05, 0.6]} radius={0.02} color="#7a5232" roughness={0.6}/>
+    {[[-0.55, -0.2], [0.55, -0.2], [-0.55, 0.2], [0.55, 0.2]].map(([x, z]) => <RBox key={`${x}${z}`} position={[x, 0.35, z]} size={[0.05, 0.7, 0.05]} radius={0.01} color="#5a3a24"/>)}
+    <Cyl position={[-0.4, 0.86, -0.1]} radius={0.05} top={0.03} height={0.2} color="#2a2f33"/>
+    <RBox position={[0.42, 0.82, -0.05]} size={[0.07, 0.03, 0.02]} radius={0.005} color="#1c1f24"/>
+    <RBox position={[0.42, 0.85, -0.06]} size={[0.09, 0.16, 0.01]} radius={0.004} color="#0f1214" rotation={[-0.4, 0, 0]}/>
+  </Group>
+}
