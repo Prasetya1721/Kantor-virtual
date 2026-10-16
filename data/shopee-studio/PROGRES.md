@@ -22,3 +22,9 @@
 ## Keputusan desain
 - Video dibuat motion-graphics (tanpa footage produk asli) agar aman hak cipta; bisa diganti screenshot asli kalau Oppa punya produk fisiknya.
 - Data studio disimpan sebagai file JSON di data/shopee-studio (bukan DB) — sesuai pola repo (stateless, read-only server).
+
+
+## Update 16 Okt (sore)
+- Skill baru: `shopee-affiliate-studio` (media) — riset + thumbnail Pillow + video ffmpeg, script `make_thumbnail.py`.
+- Thumbnail visual: `thumb-r50i.png` (1080x1920, gradien, ikon TWS, badge harga Shopee, emoji).
+- Video v2: `promo-r50i-v2.mp4` — 16,8 detik, thumbnail sebagai scene pembuka dengan zoom Ken Burns, strip oranye Shopee di scene fitur, kotak CTA, transisi xfade slideleft. Pengganti v1 yang teks-polos.
