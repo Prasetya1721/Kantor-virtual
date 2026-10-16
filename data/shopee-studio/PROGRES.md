@@ -28,3 +28,31 @@
 - Skill baru: `shopee-affiliate-studio` (media) — riset + thumbnail Pillow + video ffmpeg, script `make_thumbnail.py`.
 - Thumbnail visual: `thumb-r50i.png` (1080x1920, gradien, ikon TWS, badge harga Shopee, emoji).
 - Video v2: `promo-r50i-v2.mp4` — 16,8 detik, thumbnail sebagai scene pembuka dengan zoom Ken Burns, strip oranye Shopee di scene fitur, kotak CTA, transisi xfade slideleft. Pengganti v1 yang teks-polos.
+
+
+---
+# LAPORAN MALAM — 16 Okt 2026 (untuk review Oppa pagi)
+
+## Status alur produksi (6 tahap, sudah resmi di skill v2.0)
+1. ✅ Riset produk — 5 kandidat terverifikasi (riset-produk-2026-10.json)
+2. ✅ Naskah — konten 001 siap; 002-005 naskah + caption + hashtag sudah disiapkan
+3. ⏸️ Storyboard AI — server diblokir anti-bot (Shopee captcha, ChatGPT Cloudflare,
+   Gemini guest upload hang). **Butuh Oppa**: buka storyboard-prompt.md di konten-001,
+   jalankan dari HP/laptop sendiri (5 menit), lalu Google Flow.
+4. ✅ Voice-over AI — edge-tts id-ID GadisNeural terpasang & teruji
+5. ✅ Editing — konten-001/final.mp4 (17,5 dtk, bersuara) sebagai fallback motion-graphics
+6. ⏳ Upload — menunggu storyboard + persetujuan Oppa
+
+## Kerjaan malam ini
+- 4 thumbnail baru: thumb-skintific/wardah/dalba/hanasui.png (siap konten 002-005)
+- 4 folder naskah siap eksekusi: 002-skintific, 003-wardah, 004-dalba, 005-hanasui
+- Skill v2: Tahap 3 revamp AI Storyboard + batasan server dicatat
+
+## Keputusan yang Oppa butuhkan pagi ini
+1. Jalankan storyboard konten-001 dari browser sendiri (prompt sudah siap) — atau
+   beri tahu Irine akun mana yang boleh dipakai dari browser desktop Oppa.
+2. Pilih produk konten-002 (rekomendasi: Skintific, ranking #1).
+3. Kalau presentasi PMS masih pakai lisensi demo: jatuh tempo 15 Okt — sudah lewat,
+   perlu diperpanjang.
+
+Selamat pagi, Oppa. 🌹
