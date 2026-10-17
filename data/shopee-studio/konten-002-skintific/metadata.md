@@ -29,3 +29,15 @@
 - Key disimpan di .env sebagai MODELROUTER_TTS_KEY.
 - Catatan: endpoint chat gemini di router ini vision-capable (QA storyboard otomatis
   jadi mungkin!), tapi TIDAK ada image-generation endpoint.
+
+
+## Revisi v4 (17 Okt — strategi hero-shot murni)
+Masalah v2/v3: QA Gemini konsisten 4/10 untuk SEMUA komposit (botol cut-out, foto di
+layar phone, foto di podium) — produk foto toko tidak akan pernah menyatu sempurna
+dengan scene AI dari server (tanpa image-to-video / generative fill).
+Solusi final: pola iklan skincare standar —
+- HERO shots 100% foto asli (hero-1 full frame latar blur, hero-2 close-up label,
+  hero-3 close-up pompa) → QA Gemini 9/10
+- Scene AI hanya untuk konteks tanpa produk (reaksi, tangan, suasana, CTA)
+- 3 dari 7 shot = barang asli murni. Zero komposit = zero artifact.
+final-v4.mp4 12,5 dtk — INI VERSI UNTUK REVIEW OPPA.
